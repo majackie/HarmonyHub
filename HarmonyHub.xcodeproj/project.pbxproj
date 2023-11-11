@@ -11,6 +11,8 @@
 		8F4FA7042AFDDC040082153D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F4FA7032AFDDC040082153D /* ContentView.swift */; };
 		8F4FA7062AFDDC060082153D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8F4FA7052AFDDC060082153D /* Assets.xcassets */; };
 		8F4FA7092AFDDC060082153D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8F4FA7082AFDDC060082153D /* Preview Assets.xcassets */; };
+		8F4FA7152AFF7D2B0082153D /* SpotifyAPIConfig.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8F4FA7142AFF7D2B0082153D /* SpotifyAPIConfig.plist */; };
+		8F4FA7172AFF7E570082153D /* SpotifyApiConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F4FA7162AFF7E570082153D /* SpotifyApiConfig.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -19,6 +21,8 @@
 		8F4FA7032AFDDC040082153D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		8F4FA7052AFDDC060082153D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8F4FA7082AFDDC060082153D /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		8F4FA7142AFF7D2B0082153D /* SpotifyAPIConfig.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = SpotifyAPIConfig.plist; sourceTree = "<group>"; };
+		8F4FA7162AFF7E570082153D /* SpotifyApiConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyApiConfig.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -51,9 +55,10 @@
 		8F4FA7002AFDDC040082153D /* HarmonyHub */ = {
 			isa = PBXGroup;
 			children = (
-				8F4FA7012AFDDC040082153D /* HarmonyHubApp.swift */,
-				8F4FA7032AFDDC040082153D /* ContentView.swift */,
-				8F4FA7052AFDDC060082153D /* Assets.xcassets */,
+				8F4FA70F2AFF7C0C0082153D /* Model */,
+				8F4FA7102AFF7C120082153D /* View */,
+				8F4FA7112AFF7C170082153D /* ViewModel */,
+				8F4FA7132AFF7C260082153D /* Other */,
 				8F4FA7072AFDDC060082153D /* Preview Content */,
 			);
 			path = HarmonyHub;
@@ -65,6 +70,39 @@
 				8F4FA7082AFDDC060082153D /* Preview Assets.xcassets */,
 			);
 			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		8F4FA70F2AFF7C0C0082153D /* Model */ = {
+			isa = PBXGroup;
+			children = (
+				8F4FA7162AFF7E570082153D /* SpotifyApiConfig.swift */,
+			);
+			path = Model;
+			sourceTree = "<group>";
+		};
+		8F4FA7102AFF7C120082153D /* View */ = {
+			isa = PBXGroup;
+			children = (
+				8F4FA7032AFDDC040082153D /* ContentView.swift */,
+			);
+			path = View;
+			sourceTree = "<group>";
+		};
+		8F4FA7112AFF7C170082153D /* ViewModel */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = ViewModel;
+			sourceTree = "<group>";
+		};
+		8F4FA7132AFF7C260082153D /* Other */ = {
+			isa = PBXGroup;
+			children = (
+				8F4FA7012AFDDC040082153D /* HarmonyHubApp.swift */,
+				8F4FA7052AFDDC060082153D /* Assets.xcassets */,
+				8F4FA7142AFF7D2B0082153D /* SpotifyAPIConfig.plist */,
+			);
+			path = Other;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -127,6 +165,7 @@
 			files = (
 				8F4FA7092AFDDC060082153D /* Preview Assets.xcassets in Resources */,
 				8F4FA7062AFDDC060082153D /* Assets.xcassets in Resources */,
+				8F4FA7152AFF7D2B0082153D /* SpotifyAPIConfig.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -137,6 +176,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8F4FA7172AFF7E570082153D /* SpotifyApiConfig.swift in Sources */,
 				8F4FA7042AFDDC040082153D /* ContentView.swift in Sources */,
 				8F4FA7022AFDDC040082153D /* HarmonyHubApp.swift in Sources */,
 			);
@@ -274,6 +314,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"HarmonyHub/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = HarmonyHub;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
@@ -302,6 +343,7 @@
 				DEVELOPMENT_ASSET_PATHS = "\"HarmonyHub/Preview Content\"";
 				ENABLE_PREVIEWS = YES;
 				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = HarmonyHub;
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
