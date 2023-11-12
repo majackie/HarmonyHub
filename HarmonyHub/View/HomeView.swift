@@ -32,7 +32,6 @@ struct HomeView: View {
                 Text("Playlist").tag("Playlist")
             }
             .pickerStyle(SegmentedPickerStyle())
-            .padding()
             
             if selectedItem == "Token" {
                 HStack{
@@ -42,6 +41,7 @@ struct HomeView: View {
                     getAccessToken()
                 }
                 Text(accessToken)
+                    .padding(.top)
             } else if selectedItem == "Artist" {
                 HStack {
                     Text("Artist ID: ")
@@ -51,6 +51,7 @@ struct HomeView: View {
                     getArtistInfo()
                 }
                 Text(artistInfo)
+                    .padding(.top)
             } else if selectedItem == "Album" {
                 HStack {
                     Text("Album ID: ")
@@ -60,6 +61,7 @@ struct HomeView: View {
                     getAlbumInfo()
                 }
                 Text(albumInfo)
+                    .padding(.top)
             } else if selectedItem == "Playlist" {
                 HStack {
                     Text("Playlist ID: ")
@@ -69,10 +71,12 @@ struct HomeView: View {
                     getPlaylistInfo()
                 }
                 Text(playlistInfo)
+                    .padding(.top)
             }
             
             Spacer()
         }
+        .padding()
     }
     
     func getAccessToken() {
