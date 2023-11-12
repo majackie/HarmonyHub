@@ -11,10 +11,10 @@
 		8F4FA7042AFDDC040082153D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F4FA7032AFDDC040082153D /* ContentView.swift */; };
 		8F4FA7062AFDDC060082153D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8F4FA7052AFDDC060082153D /* Assets.xcassets */; };
 		8F4FA7092AFDDC060082153D /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8F4FA7082AFDDC060082153D /* Preview Assets.xcassets */; };
-		8F4FA7152AFF7D2B0082153D /* SpotifyAPIConfig.plist in Resources */ = {isa = PBXBuildFile; fileRef = 8F4FA7142AFF7D2B0082153D /* SpotifyAPIConfig.plist */; };
-		8F4FA7172AFF7E570082153D /* SpotifyApiConfig.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F4FA7162AFF7E570082153D /* SpotifyApiConfig.swift */; };
 		8F4FA71D2AFF95380082153D /* HomeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F4FA71C2AFF95380082153D /* HomeView.swift */; };
 		8F4FA71F2AFF953F0082153D /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F4FA71E2AFF953F0082153D /* AboutView.swift */; };
+		8F4FA7272B005C230082153D /* ArtistModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F4FA7262B005C230082153D /* ArtistModel.swift */; };
+		8F4FA72A2B005EF90082153D /* AlbumModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F4FA7292B005EF90082153D /* AlbumModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -23,10 +23,10 @@
 		8F4FA7032AFDDC040082153D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		8F4FA7052AFDDC060082153D /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		8F4FA7082AFDDC060082153D /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
-		8F4FA7142AFF7D2B0082153D /* SpotifyAPIConfig.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = SpotifyAPIConfig.plist; sourceTree = "<group>"; };
-		8F4FA7162AFF7E570082153D /* SpotifyApiConfig.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SpotifyApiConfig.swift; sourceTree = "<group>"; };
 		8F4FA71C2AFF95380082153D /* HomeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HomeView.swift; sourceTree = "<group>"; };
 		8F4FA71E2AFF953F0082153D /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
+		8F4FA7262B005C230082153D /* ArtistModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistModel.swift; sourceTree = "<group>"; };
+		8F4FA7292B005EF90082153D /* AlbumModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -79,7 +79,8 @@
 		8F4FA70F2AFF7C0C0082153D /* Model */ = {
 			isa = PBXGroup;
 			children = (
-				8F4FA7162AFF7E570082153D /* SpotifyApiConfig.swift */,
+				8F4FA7262B005C230082153D /* ArtistModel.swift */,
+				8F4FA7292B005EF90082153D /* AlbumModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -106,7 +107,6 @@
 			children = (
 				8F4FA7012AFDDC040082153D /* HarmonyHubApp.swift */,
 				8F4FA7052AFDDC060082153D /* Assets.xcassets */,
-				8F4FA7142AFF7D2B0082153D /* SpotifyAPIConfig.plist */,
 			);
 			path = Other;
 			sourceTree = "<group>";
@@ -171,7 +171,6 @@
 			files = (
 				8F4FA7092AFDDC060082153D /* Preview Assets.xcassets in Resources */,
 				8F4FA7062AFDDC060082153D /* Assets.xcassets in Resources */,
-				8F4FA7152AFF7D2B0082153D /* SpotifyAPIConfig.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -182,9 +181,10 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				8F4FA7172AFF7E570082153D /* SpotifyApiConfig.swift in Sources */,
 				8F4FA71D2AFF95380082153D /* HomeView.swift in Sources */,
+				8F4FA72A2B005EF90082153D /* AlbumModel.swift in Sources */,
 				8F4FA7042AFDDC040082153D /* ContentView.swift in Sources */,
+				8F4FA7272B005C230082153D /* ArtistModel.swift in Sources */,
 				8F4FA7022AFDDC040082153D /* HarmonyHubApp.swift in Sources */,
 				8F4FA71F2AFF953F0082153D /* AboutView.swift in Sources */,
 			);
