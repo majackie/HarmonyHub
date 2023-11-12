@@ -24,7 +24,6 @@ struct HomeView: View {
         VStack(alignment: .leading) {
             Text("Acess Token")
             Button("Request") {
-                // getAccessToken function
                 getAccessToken()
             }
             Text(accessToken)
@@ -35,7 +34,6 @@ struct HomeView: View {
                 TextField("", text: $artistId)
             }
             Button("Get Artist") {
-                // getArtist function
                 getArtistInfo()
             }
             Text(artistInfo)
@@ -46,7 +44,6 @@ struct HomeView: View {
                 TextField("", text: $albumId)
             }
             Button("Get Album") {
-                // getAlbum function
                 getAlbumInfo()
             }
             Text(albumInfo)
@@ -116,7 +113,6 @@ struct HomeView: View {
                     self.error = "Error parsing artist info: \(error.localizedDescription)"
                 }
             } else if let error = error {
-                // Handle network error
                 self.error = "Network error: \(error.localizedDescription)"
             }
         }.resume()
@@ -143,7 +139,6 @@ struct HomeView: View {
                     self.error = "Error parsing album info: \(error.localizedDescription)"
                 }
             } else if let error = error {
-                // Handle network error
                 self.error = "Network error: \(error.localizedDescription)"
             }
         }.resume()
