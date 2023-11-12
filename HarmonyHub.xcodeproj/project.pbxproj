@@ -15,6 +15,7 @@
 		8F4FA71F2AFF953F0082153D /* AboutView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F4FA71E2AFF953F0082153D /* AboutView.swift */; };
 		8F4FA7272B005C230082153D /* ArtistModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F4FA7262B005C230082153D /* ArtistModel.swift */; };
 		8F4FA72A2B005EF90082153D /* AlbumModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F4FA7292B005EF90082153D /* AlbumModel.swift */; };
+		8F4FA72C2B006C070082153D /* PlaylistModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F4FA72B2B006C070082153D /* PlaylistModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -27,6 +28,7 @@
 		8F4FA71E2AFF953F0082153D /* AboutView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AboutView.swift; sourceTree = "<group>"; };
 		8F4FA7262B005C230082153D /* ArtistModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistModel.swift; sourceTree = "<group>"; };
 		8F4FA7292B005EF90082153D /* AlbumModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumModel.swift; sourceTree = "<group>"; };
+		8F4FA72B2B006C070082153D /* PlaylistModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -81,6 +83,7 @@
 			children = (
 				8F4FA7262B005C230082153D /* ArtistModel.swift */,
 				8F4FA7292B005EF90082153D /* AlbumModel.swift */,
+				8F4FA72B2B006C070082153D /* PlaylistModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -183,6 +186,7 @@
 			files = (
 				8F4FA71D2AFF95380082153D /* HomeView.swift in Sources */,
 				8F4FA72A2B005EF90082153D /* AlbumModel.swift in Sources */,
+				8F4FA72C2B006C070082153D /* PlaylistModel.swift in Sources */,
 				8F4FA7042AFDDC040082153D /* ContentView.swift in Sources */,
 				8F4FA7272B005C230082153D /* ArtistModel.swift in Sources */,
 				8F4FA7022AFDDC040082153D /* HarmonyHubApp.swift in Sources */,
