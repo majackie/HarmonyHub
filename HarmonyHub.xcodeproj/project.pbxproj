@@ -16,6 +16,7 @@
 		8F4FA7272B005C230082153D /* ArtistModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F4FA7262B005C230082153D /* ArtistModel.swift */; };
 		8F4FA72A2B005EF90082153D /* AlbumModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F4FA7292B005EF90082153D /* AlbumModel.swift */; };
 		8F4FA72C2B006C070082153D /* PlaylistModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F4FA72B2B006C070082153D /* PlaylistModel.swift */; };
+		8F4FA72E2B0070E90082153D /* UserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F4FA72D2B0070E90082153D /* UserModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -29,6 +30,7 @@
 		8F4FA7262B005C230082153D /* ArtistModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ArtistModel.swift; sourceTree = "<group>"; };
 		8F4FA7292B005EF90082153D /* AlbumModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumModel.swift; sourceTree = "<group>"; };
 		8F4FA72B2B006C070082153D /* PlaylistModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistModel.swift; sourceTree = "<group>"; };
+		8F4FA72D2B0070E90082153D /* UserModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -84,6 +86,7 @@
 				8F4FA7262B005C230082153D /* ArtistModel.swift */,
 				8F4FA7292B005EF90082153D /* AlbumModel.swift */,
 				8F4FA72B2B006C070082153D /* PlaylistModel.swift */,
+				8F4FA72D2B0070E90082153D /* UserModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -186,6 +189,7 @@
 			files = (
 				8F4FA71D2AFF95380082153D /* HomeView.swift in Sources */,
 				8F4FA72A2B005EF90082153D /* AlbumModel.swift in Sources */,
+				8F4FA72E2B0070E90082153D /* UserModel.swift in Sources */,
 				8F4FA72C2B006C070082153D /* PlaylistModel.swift in Sources */,
 				8F4FA7042AFDDC040082153D /* ContentView.swift in Sources */,
 				8F4FA7272B005C230082153D /* ArtistModel.swift in Sources */,
