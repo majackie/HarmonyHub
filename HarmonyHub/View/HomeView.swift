@@ -35,7 +35,6 @@ struct HomeView: View {
                 Button("Authenticated ❌") {
                     authenticateUser()
                 }
-                .foregroundColor(Color.black)
             } else {
                 Text("Authenticated ✅")
             }
@@ -242,6 +241,7 @@ struct HomeView: View {
             
             URLSession.shared.dataTask(with: request) { data, response, error in
                 if let data = data {
+                    print("Response Data:\n\(String(data: data, encoding: .utf8) ?? "")")
                     do {
                         let user = try JSONDecoder().decode(UserModel.self, from: data)
                         DispatchQueue.main.async {
@@ -263,7 +263,8 @@ struct HomeView: View {
         "?client_id=\(clientId)" +
         "&response_type=token" +
         "&redirect_uri=\(redirectUri)" +
-        "&scope=user-read-private"
+        "&scope=user-read-private" +
+        "&scope=user-read-email"
         
         if let authURL = URL(string: authURLString) {
             if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
