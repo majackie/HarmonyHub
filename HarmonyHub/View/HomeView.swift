@@ -10,10 +10,11 @@ import SwiftUI
 
 let clientId = "012cd446b8764125b30398495b54511f"
 let clientSecret = "902a0891d63146d988e6b11b7e332bcb"
-let redirectUri = "https://github.com/majackie/HarmonyHub"
+let redirectUri = "https://github.com/majackie"
 
 struct HomeView: View {
     @State private var accessToken: String = ""
+    
     @State private var artistId: String = "0Y4inQK6OespitzD6ijMwb"
     @State private var albumId: String = "43uErencdmuTRFZPG3zXL1"
     @State private var playlistId: String = "37i9dQZF1DZ06evO0vFpVC"
