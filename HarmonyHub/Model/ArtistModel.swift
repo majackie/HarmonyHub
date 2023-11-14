@@ -7,14 +7,30 @@
 
 import Foundation
 
-struct ArtistModel: Codable {
-    let id: String?
-    let name: String?
+struct ArtistModel: Decodable {
+    let external_urls: ExternalUrls?
     let followers: Followers?
     let genres: [String]?
+    let href: String?
+    let id: String?
+    let images: [Image]?
+    let name: String?
     let popularity: Int?
-    
-    struct Followers: Codable {
+    let type: String?
+    let uri: String?
+
+    struct ExternalUrls: Decodable {
+        let spotify: String?
+    }
+
+    struct Followers: Decodable {
+        let href: String?
         let total: Int?
+    }
+
+    struct Image: Decodable {
+        let url: String?
+        let height: Int?
+        let width: Int?
     }
 }

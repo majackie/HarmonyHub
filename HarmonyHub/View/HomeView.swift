@@ -100,7 +100,8 @@ struct HomeView: View {
                     Text("Email: \(userInfo?.email ?? "")")
                     Text(userInfo?.followers?.total ?? 0 > 0 ? "Followers: \(userInfo!.followers!.total!)" : "Followers: ")
                     Text("Premium: \(userInfo?.product ?? "")")
-                    Text("Image: \(userInfo?.images?.first?.url ?? "")")
+                    // Text("Image: \(userInfo?.images?.first?.url ?? "")")
+                    AsyncImage(url: URL(string: "\(userInfo?.images?.first?.url ?? "")"))
                 }
             }
             
@@ -311,7 +312,6 @@ struct HomeView: View {
             }
         }
     }
-    
 }
 
 #Preview {
