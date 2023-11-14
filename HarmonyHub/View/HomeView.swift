@@ -115,7 +115,6 @@ struct HomeView: View {
                 Button("Submit") {
                     getUserInfo()
                 }
-                Text("ID: \(userInfo?.id ?? "")")
                 Text("Name: \(userInfo?.display_name ?? "")")
                 AsyncImage(url: URL(string: userInfo?.images?.first?.url ?? "")) { image in
                     image.resizable()
