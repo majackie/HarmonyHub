@@ -8,14 +8,14 @@
 import Foundation
 
 struct AlbumModel: Codable {
-    let id: String
-    let name: String
-    let artists: [Artist]
-    let release_date: String
-    let total_tracks: Int
+    let id: String?
+    let name: String?
+    let artists: [Artist]?
+    let release_date: String?
+    let total_tracks: Int?
     
     struct Artist: Codable {
-        let id: String
-        let name: String
+        let id: String?
+        let name: String?
     }
 }

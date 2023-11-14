@@ -21,9 +21,9 @@ struct HomeView: View {
     @State private var albumId: String = "43uErencdmuTRFZPG3zXL1"
     @State private var playlistId: String = "37i9dQZF1DZ06evO0vFpVC"
     
-    @State private var artistInfo: String = ""
-    @State private var albumInfo: String = ""
-    @State private var playlistInfo: String = ""
+    @State private var artistInfo: ArtistModel? = nil
+    @State private var albumInfo: AlbumModel? = nil
+    @State private var playlistInfo: PlaylistModel? = nil
     @State private var userInfo: UserModel? = nil
     
     @State private var error: String? = nil
@@ -31,9 +31,6 @@ struct HomeView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text("accessTokenGeneral:\n\(accessTokenGeneral)")
-            Text("accessTokenUser:\n\(accessTokenUser)")
-            
             Picker("Select Item", selection: $selectedItem) {
                 Text("Artist").tag("Artist")
                 Text("Album").tag("Album")
@@ -50,8 +47,15 @@ struct HomeView: View {
                 Button("Submit") {
                     getArtistInfo()
                 }
-                Text(artistInfo)
-                    .padding(.top)
+                Text("Artist: \(artistInfo?.name ?? "")")
+                Text(artistInfo?.followers?.total ?? 0 > 0 ? "Followers: \(artistInfo!.followers!.total!)" : "Followers: ")
+                if let genres = artistInfo?.genres {
+                    Text("Genres:")
+                    ForEach(genres, id: \.self) { genre in
+                        Text("- \(genre)")
+                    }
+                }
+                Text(artistInfo?.popularity ?? 0 > 0 ? "Popularity: \(artistInfo!.popularity!)" : "Popularity: ")
             } else if selectedItem == "Album" {
                 HStack {
                     Text("Album ID: ")
@@ -60,8 +64,15 @@ struct HomeView: View {
                 Button("Submit") {
                     getAlbumInfo()
                 }
-                Text(albumInfo)
-                    .padding(.top)
+                Text("Album: \(albumInfo?.name ?? "")")
+                if let artists = albumInfo?.artists {
+                    Text("Artists:")
+                    ForEach(artists, id: \.id) { artist in
+                        Text("- \(artist.name ?? "")")
+                    }
+                }
+                Text("Release Date: \(albumInfo?.release_date ?? "")")
+                Text(albumInfo?.total_tracks ?? 0 > 0 ? "Total Tracks: \(albumInfo!.total_tracks!)" : "Total Tracks: ")
             } else if selectedItem == "Playlist" {
                 HStack {
                     Text("Playlist ID: ")
@@ -70,8 +81,8 @@ struct HomeView: View {
                 Button("Submit") {
                     getPlaylistInfo()
                 }
-                Text(playlistInfo)
-                    .padding(.top)
+                Text("Playlist: \(playlistInfo?.name ?? "")")
+                Text("Owner: \(playlistInfo?.owner?.display_name ?? "")")
             } else if selectedItem == "User" {
                 if accessTokenUser.isEmpty {
                     Button("Authenticate\n") {
@@ -165,7 +176,7 @@ struct HomeView: View {
                     do {
                         let artist = try JSONDecoder().decode(ArtistModel.self, from: data)
                         DispatchQueue.main.async {
-                            self.artistInfo = "Artist Name: \(artist.name)\nFollowers: \(artist.followers.total)\nGenres: \(artist.genres.joined(separator: ", "))\nPopularity: \(artist.popularity)"
+                            self.artistInfo = artist
                         }
                     } catch {
                         print(error.localizedDescription)
@@ -193,7 +204,7 @@ struct HomeView: View {
                     do {
                         let album = try JSONDecoder().decode(AlbumModel.self, from: data)
                         DispatchQueue.main.async {
-                            self.albumInfo = "Album Name: \(album.name)\nArtist: \(album.artists[0].name)\nRelease Date: \(album.release_date)\nTotal Tracks: \(album.total_tracks)"
+                            self.albumInfo = album
                         }
                     } catch {
                         print(error.localizedDescription)
@@ -221,7 +232,7 @@ struct HomeView: View {
                     do {
                         let playlist = try JSONDecoder().decode(PlaylistModel.self, from: data)
                         DispatchQueue.main.async {
-                            self.playlistInfo = "Playlist Name: \(playlist.name)\nOwner: \(playlist.owner.display_name)"
+                            self.playlistInfo = playlist
                         }
                     } catch {
                         print(error.localizedDescription)

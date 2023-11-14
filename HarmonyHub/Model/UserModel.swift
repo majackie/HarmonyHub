@@ -8,6 +8,7 @@
 import Foundation
 
 struct UserModel: Decodable {
+    let id: String?
     let country: String?
     let display_name: String?
     let email: String?

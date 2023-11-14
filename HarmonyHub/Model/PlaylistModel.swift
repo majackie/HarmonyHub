@@ -8,11 +8,11 @@
 import Foundation
 
 struct PlaylistModel: Codable {
-    let id: String
-    let name: String
-    let owner: Owner
+    let id: String?
+    let name: String?
+    let owner: Owner?
 
     struct Owner: Codable {
-        let display_name: String
+        let display_name: String?
     }
 }
