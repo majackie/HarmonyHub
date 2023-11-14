@@ -287,6 +287,13 @@ struct HomeView: View {
 
             if let accessTokenUser = parameters["access_token"] {
                 self.accessTokenUser = accessTokenUser
+                
+                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                   let rootViewController = windowScene.windows.first?.rootViewController {
+                    if let presentedViewController = rootViewController.presentedViewController as? SFSafariViewController {
+                        presentedViewController.dismiss(animated: true, completion: nil)
+                    }
+                }
             }
         }
     }
