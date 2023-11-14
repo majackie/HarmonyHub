@@ -14,7 +14,7 @@ let redirectUri = "https://github.com/majackie"
 
 struct HomeView: View {
     @State private var accessToken: String = ""
-    @State private var authorizationToken: String = ""
+    @State private var authenticateToken: String = ""
     
     @State private var artistId: String = "0Y4inQK6OespitzD6ijMwb"
     @State private var albumId: String = "43uErencdmuTRFZPG3zXL1"
@@ -31,7 +31,7 @@ struct HomeView: View {
     var body: some View {
         VStack(alignment: .leading) {
             Text("accessToken:\n\(accessToken)")
-            Text("authorizationToken:\n\(authorizationToken)")
+            Text("authenticateToken:\n\(authenticateToken)")
             
             Picker("Select Item", selection: $selectedItem) {
                 Text("Artist").tag("Artist")
