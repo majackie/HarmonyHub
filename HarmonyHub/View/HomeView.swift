@@ -34,7 +34,6 @@ struct HomeView: View {
             Text("accessTokenGeneral:\n\(accessTokenGeneral)")
             Text("accessTokenUser:\n\(accessTokenUser)")
             
-            
             Picker("Select Item", selection: $selectedItem) {
                 Text("Artist").tag("Artist")
                 Text("Album").tag("Album")
@@ -78,16 +77,16 @@ struct HomeView: View {
                     Button("Authenticate\n") {
                         authenticateUser()
                     }
-                    .padding(.top)
+                } else {
+                    HStack {
+                        Text("User: ")
+                    }
+                    Button("Submit") {
+                        getUserInfo()
+                    }
+                    Text(userInfo)
+                        .padding(.top)
                 }
-                HStack {
-                    Text("User: ")
-                }
-                Button("Submit") {
-                    getUserInfo()
-                }
-                Text(userInfo)
-                    .padding(.top)
             }
             
             Spacer()
@@ -269,7 +268,8 @@ struct HomeView: View {
         "?client_id=\(clientId)" +
         "&response_type=token" +
         "&redirect_uri=\(redirectUri)" +
-        "&scope=user-read-private%20user-read-email"
+        "&scope=user-read-private" +
+        "%20user-read-email"
         
         if let authURL = URL(string: authURLString) {
             if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
