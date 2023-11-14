@@ -33,7 +33,7 @@ struct HomeView: View {
         VStack(alignment: .leading) {
             Text("accessTokenGeneral:\n\(accessTokenGeneral)")
             Text("accessTokenUser:\n\(accessTokenUser)")
-
+            
             
             Picker("Select Item", selection: $selectedItem) {
                 Text("Artist").tag("Artist")
@@ -75,7 +75,7 @@ struct HomeView: View {
                     .padding(.top)
             } else if selectedItem == "User" {
                 if accessTokenUser.isEmpty {
-                    Button("Authenticate") {
+                    Button("Authenticate\n") {
                         authenticateUser()
                     }
                     .padding(.top)
@@ -246,8 +246,16 @@ struct HomeView: View {
                 do {
                     let user = try JSONDecoder().decode(UserModel.self, from: data)
                     DispatchQueue.main.async {
-                        self.userInfo = "Country: \(user.country)\nDisplay Name: \(user.display_name)\nEmail: \(user.email ?? "")\nFollowers: \(user.followers.total)\nProduct: \(user.product)"
+                        self.userInfo = """
+                    Country: \(user.country ?? "")
+                    Display Name: \(user.display_name ?? "")
+                    Email: \(user.email ?? "")
+                    Followers: \(user.followers?.total ?? 0)
+                    Product: \(user.product ?? "")
+                    """
                     }
+                    
+                    print(user)
                 } catch {
                     print(error.localizedDescription)
                     self.error = "Error parsing user info: \(error.localizedDescription)"
@@ -284,7 +292,7 @@ struct HomeView: View {
                         result[pair[0]] = pair[1]
                     }
                 }
-
+            
             if let accessTokenUser = parameters["access_token"] {
                 self.accessTokenUser = accessTokenUser
                 
@@ -297,7 +305,7 @@ struct HomeView: View {
             }
         }
     }
-
+    
 }
 
 #Preview {
