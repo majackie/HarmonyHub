@@ -14,6 +14,7 @@ let redirectUri = "https://github.com/majackie"
 
 struct HomeView: View {
     @State private var accessToken: String = ""
+    @State private var authorizationToken: String = ""
     
     @State private var artistId: String = "0Y4inQK6OespitzD6ijMwb"
     @State private var albumId: String = "43uErencdmuTRFZPG3zXL1"
@@ -29,6 +30,9 @@ struct HomeView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
+            Text("accessToken:\n\(accessToken)")
+            Text("authorizationToken:\n\(authorizationToken)")
+            
             Picker("Select Item", selection: $selectedItem) {
                 Text("Artist").tag("Artist")
                 Text("Album").tag("Album")
@@ -235,7 +239,7 @@ struct HomeView: View {
                     do {
                         let user = try JSONDecoder().decode(UserModel.self, from: data)
                         DispatchQueue.main.async {
-                            self.userInfo = "Country: \(user.country)\nDisplay Name: \(user.display_name)\nEmail: \(user.email ?? "N/A")\nFollowers: \(user.followers.total)\nProduct: \(user.product)"
+                            self.userInfo = "Country: \(user.country)\nDisplay Name: \(user.display_name)\nEmail: \(user.email)\nFollowers: \(user.followers.total)\nProduct: \(user.product)"
                         }
                     } catch {
                         print(error.localizedDescription)
