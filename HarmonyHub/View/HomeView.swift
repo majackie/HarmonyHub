@@ -20,11 +20,13 @@ struct HomeView: View {
     @State private var artistId: String = "0Y4inQK6OespitzD6ijMwb"
     @State private var albumId: String = "43uErencdmuTRFZPG3zXL1"
     @State private var playlistId: String = "37i9dQZF1DZ06evO0vFpVC"
+    @State private var userId: String = "_beepee"
     
     @State private var artistInfo: ArtistModel? = nil
     @State private var albumInfo: AlbumModel? = nil
     @State private var playlistInfo: PlaylistModel? = nil
     @State private var userInfo: UserModel? = nil
+    @State private var selfInfo: UserModel? = nil
     
     @State private var error: String? = nil
     @State private var selectedItem: String = ""
@@ -43,6 +45,7 @@ struct HomeView: View {
                 HStack {
                     Text("Artist ID: ")
                     TextField("", text: $artistId)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
                 }
                 Button("Submit") {
                     getArtistInfo()
@@ -56,10 +59,17 @@ struct HomeView: View {
                     }
                 }
                 Text(artistInfo?.popularity ?? 0 > 0 ? "Popularity: \(artistInfo!.popularity!)" : "Popularity: ")
+                AsyncImage(url: URL(string: artistInfo?.images?.first?.url ?? "")) { image in
+                    image.resizable()
+                } placeholder: {
+                    // ProgressView()
+                }
+                .frame(width: 120, height: 120)
             } else if selectedItem == "Album" {
                 HStack {
                     Text("Album ID: ")
                     TextField("", text: $albumId)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
                 }
                 Button("Submit") {
                     getAlbumInfo()
@@ -73,36 +83,71 @@ struct HomeView: View {
                 }
                 Text("Release Date: \(albumInfo?.release_date ?? "")")
                 Text(albumInfo?.total_tracks ?? 0 > 0 ? "Total Tracks: \(albumInfo!.total_tracks!)" : "Total Tracks: ")
+                AsyncImage(url: URL(string: albumInfo?.images?.first?.url ?? "")) { image in
+                    image.resizable()
+                } placeholder: {
+                    // ProgressView()
+                }
+                .frame(width: 120, height: 120)
             } else if selectedItem == "Playlist" {
                 HStack {
                     Text("Playlist ID: ")
                     TextField("", text: $playlistId)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
                 }
                 Button("Submit") {
                     getPlaylistInfo()
                 }
                 Text("Playlist: \(playlistInfo?.name ?? "")")
                 Text("Owner: \(playlistInfo?.owner?.display_name ?? "")")
+                AsyncImage(url: URL(string: playlistInfo?.images?.first?.url ?? "")) { image in
+                    image.resizable()
+                } placeholder: {
+                    // ProgressView()
+                }
+                .frame(width: 120, height: 120)
             } else if selectedItem == "User" {
+                HStack {
+                    Text("User ID: ")
+                    TextField("", text: $userId)
+                        .textFieldStyle(RoundedBorderTextFieldStyle())
+                }
+                Button("Submit") {
+                    getUserInfo()
+                }
+                Text("ID: \(userInfo?.id ?? "")")
+                Text("Name: \(userInfo?.display_name ?? "")")
+                AsyncImage(url: URL(string: userInfo?.images?.first?.url ?? "")) { image in
+                    image.resizable()
+                } placeholder: {
+                    // ProgressView()
+                }
+                .frame(width: 120, height: 120)
+                
+                Spacer()
+                
                 if accessTokenUser.isEmpty {
                     Button("Authenticate\n") {
                         authenticateUser()
                     }
                 } else {
-                    HStack {
-                        Text("User: ")
-                    }
                     Button("Submit") {
-                        getUserInfo()
+                        getSelfInfo()
                     }
-                    Text("Country: \(userInfo?.country ?? "")")
-                    Text("Display Name: \(userInfo?.display_name ?? "")")
-                    Text("Email: \(userInfo?.email ?? "")")
-                    Text(userInfo?.followers?.total ?? 0 > 0 ? "Followers: \(userInfo!.followers!.total!)" : "Followers: ")
-                    Text("Premium: \(userInfo?.product ?? "")")
-                    // Text("Image: \(userInfo?.images?.first?.url ?? "")")
-                    AsyncImage(url: URL(string: "\(userInfo?.images?.first?.url ?? "")"))
+                    Text("Country: \(selfInfo?.country ?? "")")
+                    Text("Display Name: \(selfInfo?.display_name ?? "")")
+                    Text("Email: \(selfInfo?.email ?? "")")
+                    Text(selfInfo?.followers?.total ?? 0 > 0 ? "Followers: \(selfInfo!.followers!.total!)" : "Followers: ")
+                    Text("Premium: \(selfInfo?.product ?? "")")
+                    AsyncImage(url: URL(string: selfInfo?.images?.first?.url ?? "")) { image in
+                        image.resizable()
+                    } placeholder: {
+                        // ProgressView()
+                    }
+                    .frame(width: 120, height: 120)
                 }
+                
+                Spacer()
             }
             
             Spacer()
@@ -247,6 +292,35 @@ struct HomeView: View {
     }
     
     func getUserInfo() {
+        getAccessToken {
+            guard let url = URL(string: "https://api.spotify.com/v1/users/\(userId)") else {
+                return
+            }
+            
+            var request = URLRequest(url: url)
+            request.httpMethod = "GET"
+            request.setValue("Bearer \(accessTokenGeneral)", forHTTPHeaderField: "Authorization")
+            
+            URLSession.shared.dataTask(with: request) { data, response, error in
+                if let data = data {
+                    print("Response Data:\n\(String(data: data, encoding: .utf8) ?? "")")
+                    do {
+                        let user = try JSONDecoder().decode(UserModel.self, from: data)
+                        DispatchQueue.main.async {
+                            self.userInfo = user
+                        }
+                    } catch {
+                        print(error.localizedDescription)
+                        self.error = "Error parsing user info: \(error.localizedDescription)"
+                    }
+                } else if let error = error {
+                    self.error = "Network error: \(error.localizedDescription)"
+                }
+            }.resume()
+        }
+    }
+    
+    func getSelfInfo() {
         guard let url = URL(string: "https://api.spotify.com/v1/me") else {
             return
         }
@@ -261,7 +335,7 @@ struct HomeView: View {
                 do {
                     let user = try JSONDecoder().decode(UserModel.self, from: data)
                     DispatchQueue.main.async {
-                        self.userInfo = user
+                        self.selfInfo = user
                     }
                 } catch {
                     print(error.localizedDescription)
