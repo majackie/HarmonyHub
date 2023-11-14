@@ -10,9 +10,9 @@ import Foundation
 struct UserModel: Codable {
     let country: String
     let display_name: String
-    let email: String
+    let email: String?
     let followers: Followers
-    let images: [Image]
+    let images: [Image]?
     let product: String
     
     struct Followers: Codable {

@@ -7,10 +7,12 @@
 
 import Foundation
 import SwiftUI
+import SafariServices
 
 let clientId = "012cd446b8764125b30398495b54511f"
 let clientSecret = "902a0891d63146d988e6b11b7e332bcb"
 let redirectUri = "https://github.com/majackie"
+let test = "BQDRUR_oBAbIHuJhC3zF0Pc4nyT7-oNHAvG7jNxQ7qsxD1nQ98RCbxqQPdtv8Gp64gffIFTNFZMptfS9bak11wk_Cp9ZkGCWypzRKcUazVmImZvnd82JhbarupTcLAN3Xm8-GHo5Cu4l9RYR88UTpislNK1f89McYG18ca2vKNiSdQ3dTddNqNlFiBB4nKeGSAD4QFYGXX-ywJR0"
 
 struct HomeView: View {
     @State private var accessToken: String = ""
@@ -32,6 +34,10 @@ struct HomeView: View {
         VStack(alignment: .leading) {
             Text("accessToken:\n\(accessToken)")
             Text("authenticateToken:\n\(authenticateToken)")
+            
+            Button("Authenticate with Spotify") {
+                authenticateUser()
+            }
             
             Picker("Select Item", selection: $selectedItem) {
                 Text("Artist").tag("Artist")
@@ -85,6 +91,18 @@ struct HomeView: View {
             Spacer()
         }
         .padding()
+        .onOpenURL { url in
+            print(url)
+            print("above")
+            // Check if the URL contains the access token
+            if let authenticateToken = extractAccessToken(from: url) {
+                // Print the access token
+                print("Authenticate Token: \(authenticateToken)")
+                
+                // You can store the access token wherever you need it in your app
+                
+            }
+        }
     }
     
     func getAccessToken(completion: @escaping () -> Void) {
@@ -95,28 +113,28 @@ struct HomeView: View {
             completion()
             return
         }
-
+        
         let base64Credentials = "\(clientId):\(clientSecret)".data(using: .utf8)?.base64EncodedString()
         guard let base64Credentials = base64Credentials else {
             return
         }
-
+        
         let headers = [
             "Authorization": "Basic \(base64Credentials)",
             "Content-Type": "application/x-www-form-urlencoded"
         ]
-
+        
         let requestBody = "grant_type=client_credentials"
-
+        
         guard let url = URL(string: "https://accounts.spotify.com/api/token") else {
             return
         }
-
+        
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.allHTTPHeaderFields = headers
         request.httpBody = requestBody.data(using: .utf8)
-
+        
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let data = data {
                 do {
@@ -148,7 +166,6 @@ struct HomeView: View {
             
             URLSession.shared.dataTask(with: request) { data, response, error in
                 if let data = data {
-                    print("Response Data: \(String(data: data, encoding: .utf8) ?? "")")
                     do {
                         let artist = try JSONDecoder().decode(ArtistModel.self, from: data)
                         DispatchQueue.main.async {
@@ -177,7 +194,6 @@ struct HomeView: View {
             
             URLSession.shared.dataTask(with: request) { data, response, error in
                 if let data = data {
-                    print("Response Data: \(String(data: data, encoding: .utf8) ?? "")")
                     do {
                         let album = try JSONDecoder().decode(AlbumModel.self, from: data)
                         DispatchQueue.main.async {
@@ -206,7 +222,6 @@ struct HomeView: View {
             
             URLSession.shared.dataTask(with: request) { data, response, error in
                 if let data = data {
-                    print("Response Data: \(String(data: data, encoding: .utf8) ?? "")")
                     do {
                         let playlist = try JSONDecoder().decode(PlaylistModel.self, from: data)
                         DispatchQueue.main.async {
@@ -231,15 +246,15 @@ struct HomeView: View {
             
             var request = URLRequest(url: url)
             request.httpMethod = "GET"
-            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+            request.setValue("Bearer \(test)", forHTTPHeaderField: "Authorization")
             
             URLSession.shared.dataTask(with: request) { data, response, error in
                 if let data = data {
-                    print("Response Data: \(String(data: data, encoding: .utf8) ?? "")")
+                    print("Response Data:\n\(String(data: data, encoding: .utf8) ?? "")")
                     do {
                         let user = try JSONDecoder().decode(UserModel.self, from: data)
                         DispatchQueue.main.async {
-                            self.userInfo = "Country: \(user.country)\nDisplay Name: \(user.display_name)\nEmail: \(user.email)\nFollowers: \(user.followers.total)\nProduct: \(user.product)"
+                            self.userInfo = "Country: \(user.country)\nDisplay Name: \(user.display_name)\nEmail: \(user.email ?? "")\nFollowers: \(user.followers.total)\nProduct: \(user.product)"
                         }
                     } catch {
                         print(error.localizedDescription)
@@ -250,6 +265,40 @@ struct HomeView: View {
                 }
             }.resume()
         }
+    }
+    
+    func authenticateUser() {
+        // Define the Spotify authentication URL
+        let authURLString = "https://accounts.spotify.com/authorize" +
+        "?client_id=\(clientId)" +
+        "&response_type=token" +
+        "&redirect_uri=\(redirectUri)" +
+        "&scope=user-read-private" // Add the required scopes
+        
+        if let authURL = URL(string: authURLString) {
+            // Use the first window scene to present the SafariViewController
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+                let safariViewController = SFSafariViewController(url: authURL)
+                windowScene.windows.first?.rootViewController?.present(safariViewController, animated: true, completion: nil)
+            }
+        }
+    }
+    
+    func extractAccessToken(from url: URL) -> String? {
+        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
+              let fragment = components.fragment else {
+            return nil
+        }
+        
+        let queryParams = fragment.components(separatedBy: "&")
+        for queryParam in queryParams {
+            let keyValue = queryParam.components(separatedBy: "=")
+            if keyValue.count == 2 && keyValue[0] == "access_token" {
+                return keyValue[1]
+            }
+        }
+
+        return nil
     }
 }
 
