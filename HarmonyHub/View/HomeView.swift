@@ -31,13 +31,9 @@ struct HomeView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            if accessTokenUser.isEmpty {
-                Button("Authenticated ❌") {
-                    authenticateUser()
-                }
-            } else {
-                Text("Authenticated ✅")
-            }
+            Text("accessTokenGeneral:\n\(accessTokenGeneral)")
+            Text("accessTokenUser:\n\(accessTokenUser)")
+
             
             Picker("Select Item", selection: $selectedItem) {
                 Text("Artist").tag("Artist")
@@ -78,6 +74,12 @@ struct HomeView: View {
                 Text(playlistInfo)
                     .padding(.top)
             } else if selectedItem == "User" {
+                if accessTokenUser.isEmpty {
+                    Button("Authenticate") {
+                        authenticateUser()
+                    }
+                    .padding(.top)
+                }
                 HStack {
                     Text("User: ")
                 }
@@ -230,32 +232,30 @@ struct HomeView: View {
     }
     
     func getUserInfo() {
-        getAccessToken {
-            guard let url = URL(string: "https://api.spotify.com/v1/me") else {
-                return
-            }
-            
-            var request = URLRequest(url: url)
-            request.httpMethod = "GET"
-            request.setValue("Bearer \(accessTokenUser)", forHTTPHeaderField: "Authorization")
-            
-            URLSession.shared.dataTask(with: request) { data, response, error in
-                if let data = data {
-                    print("Response Data:\n\(String(data: data, encoding: .utf8) ?? "")")
-                    do {
-                        let user = try JSONDecoder().decode(UserModel.self, from: data)
-                        DispatchQueue.main.async {
-                            self.userInfo = "Country: \(user.country)\nDisplay Name: \(user.display_name)\nEmail: \(user.email ?? "")\nFollowers: \(user.followers.total)\nProduct: \(user.product)"
-                        }
-                    } catch {
-                        print(error.localizedDescription)
-                        self.error = "Error parsing user info: \(error.localizedDescription)"
-                    }
-                } else if let error = error {
-                    self.error = "Network error: \(error.localizedDescription)"
-                }
-            }.resume()
+        guard let url = URL(string: "https://api.spotify.com/v1/me") else {
+            return
         }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(accessTokenUser)", forHTTPHeaderField: "Authorization")
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let data = data {
+                print("Response Data:\n\(String(data: data, encoding: .utf8) ?? "")")
+                do {
+                    let user = try JSONDecoder().decode(UserModel.self, from: data)
+                    DispatchQueue.main.async {
+                        self.userInfo = "Country: \(user.country)\nDisplay Name: \(user.display_name)\nEmail: \(user.email ?? "")\nFollowers: \(user.followers.total)\nProduct: \(user.product)"
+                    }
+                } catch {
+                    print(error.localizedDescription)
+                    self.error = "Error parsing user info: \(error.localizedDescription)"
+                }
+            } else if let error = error {
+                self.error = "Network error: \(error.localizedDescription)"
+            }
+        }.resume()
     }
     
     func authenticateUser() {
