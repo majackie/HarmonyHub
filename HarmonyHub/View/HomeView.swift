@@ -254,8 +254,6 @@ struct HomeView: View {
                     Product: \(user.product ?? "")
                     """
                     }
-                    
-                    print(user)
                 } catch {
                     print(error.localizedDescription)
                     self.error = "Error parsing user info: \(error.localizedDescription)"
@@ -271,8 +269,7 @@ struct HomeView: View {
         "?client_id=\(clientId)" +
         "&response_type=token" +
         "&redirect_uri=\(redirectUri)" +
-        "&scope=user-read-private" +
-        "&scope=user-read-email"
+        "&scope=user-read-private%20user-read-email"
         
         if let authURL = URL(string: authURLString) {
             if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
