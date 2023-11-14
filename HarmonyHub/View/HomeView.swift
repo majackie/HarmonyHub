@@ -24,7 +24,7 @@ struct HomeView: View {
     @State private var artistInfo: String = ""
     @State private var albumInfo: String = ""
     @State private var playlistInfo: String = ""
-    @State private var userInfo: String = ""
+    @State private var userInfo: UserModel? = nil
     
     @State private var error: String? = nil
     @State private var selectedItem: String = ""
@@ -84,8 +84,12 @@ struct HomeView: View {
                     Button("Submit") {
                         getUserInfo()
                     }
-                    Text(userInfo)
-                        .padding(.top)
+                    Text("Country: \(userInfo?.country ?? "")")
+                    Text("Display Name: \(userInfo?.display_name ?? "")")
+                    Text("Email: \(userInfo?.email ?? "")")
+                    Text(userInfo?.followers?.total ?? 0 > 0 ? "Followers: \(userInfo!.followers!.total!)" : "Followers: ")
+                    Text("Premium: \(userInfo?.product ?? "")")
+                    Text("Image: \(userInfo?.images?.first?.url ?? "")")
                 }
             }
             
@@ -245,13 +249,7 @@ struct HomeView: View {
                 do {
                     let user = try JSONDecoder().decode(UserModel.self, from: data)
                     DispatchQueue.main.async {
-                        self.userInfo = """
-                    Country: \(user.country ?? "")
-                    Display Name: \(user.display_name ?? "")
-                    Email: \(user.email ?? "")
-                    Followers: \(user.followers?.total ?? 0)
-                    Product: \(user.product ?? "")
-                    """
+                        self.userInfo = user
                     }
                 } catch {
                     print(error.localizedDescription)

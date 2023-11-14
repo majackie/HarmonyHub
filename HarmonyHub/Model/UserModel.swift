@@ -12,8 +12,8 @@ struct UserModel: Decodable {
     let display_name: String?
     let email: String?
     let followers: Followers?
-    let images: [Image]?
     let product: String?
+    let images: [Image]?
     
     struct Followers: Decodable {
         let total: Int?
