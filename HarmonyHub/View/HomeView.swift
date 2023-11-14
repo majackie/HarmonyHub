@@ -11,12 +11,11 @@ import SafariServices
 
 let clientId = "012cd446b8764125b30398495b54511f"
 let clientSecret = "902a0891d63146d988e6b11b7e332bcb"
-let redirectUri = "https://github.com/majackie"
-let test = "BQDRUR_oBAbIHuJhC3zF0Pc4nyT7-oNHAvG7jNxQ7qsxD1nQ98RCbxqQPdtv8Gp64gffIFTNFZMptfS9bak11wk_Cp9ZkGCWypzRKcUazVmImZvnd82JhbarupTcLAN3Xm8-GHo5Cu4l9RYR88UTpislNK1f89McYG18ca2vKNiSdQ3dTddNqNlFiBB4nKeGSAD4QFYGXX-ywJR0"
+let redirectUri = "myapp://auth/callback"
 
 struct HomeView: View {
-    @State private var accessToken: String = ""
-    @State private var authenticateToken: String = ""
+    @State private var accessTokenGeneral: String = ""
+    @State private var accessTokenUser: String = ""
     
     @State private var artistId: String = "0Y4inQK6OespitzD6ijMwb"
     @State private var albumId: String = "43uErencdmuTRFZPG3zXL1"
@@ -32,11 +31,13 @@ struct HomeView: View {
     
     var body: some View {
         VStack(alignment: .leading) {
-            Text("accessToken:\n\(accessToken)")
-            Text("authenticateToken:\n\(authenticateToken)")
-            
-            Button("Authenticate with Spotify") {
-                authenticateUser()
+            if accessTokenUser.isEmpty {
+                Button("Authenticated ❌") {
+                    authenticateUser()
+                }
+                .foregroundColor(Color.black)
+            } else {
+                Text("Authenticated ✅")
             }
             
             Picker("Select Item", selection: $selectedItem) {
@@ -92,16 +93,7 @@ struct HomeView: View {
         }
         .padding()
         .onOpenURL { url in
-            print(url)
-            print("above")
-            // Check if the URL contains the access token
-            if let authenticateToken = extractAccessToken(from: url) {
-                // Print the access token
-                print("Authenticate Token: \(authenticateToken)")
-                
-                // You can store the access token wherever you need it in your app
-                
-            }
+            extractAccessToken(from: url)
         }
     }
     
@@ -109,7 +101,7 @@ struct HomeView: View {
         if let storedAccessToken = UserDefaults.standard.string(forKey: "accessToken"),
            let expirationDate = UserDefaults.standard.object(forKey: "accessTokenExpirationDate") as? Date,
            Date() < expirationDate {
-            self.accessToken = storedAccessToken
+            self.accessTokenGeneral = storedAccessToken
             completion()
             return
         }
@@ -144,7 +136,7 @@ struct HomeView: View {
                         let expirationDate = Date().addingTimeInterval(expiresIn)
                         UserDefaults.standard.set(accessToken, forKey: "accessToken")
                         UserDefaults.standard.set(expirationDate, forKey: "accessTokenExpirationDate")
-                        self.accessToken = accessToken
+                        self.accessTokenGeneral = accessToken
                         completion()
                     }
                 } catch {
@@ -162,7 +154,7 @@ struct HomeView: View {
             
             var request = URLRequest(url: url)
             request.httpMethod = "GET"
-            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+            request.setValue("Bearer \(accessTokenGeneral)", forHTTPHeaderField: "Authorization")
             
             URLSession.shared.dataTask(with: request) { data, response, error in
                 if let data = data {
@@ -190,7 +182,7 @@ struct HomeView: View {
             
             var request = URLRequest(url: url)
             request.httpMethod = "GET"
-            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+            request.setValue("Bearer \(accessTokenGeneral)", forHTTPHeaderField: "Authorization")
             
             URLSession.shared.dataTask(with: request) { data, response, error in
                 if let data = data {
@@ -218,7 +210,7 @@ struct HomeView: View {
             
             var request = URLRequest(url: url)
             request.httpMethod = "GET"
-            request.setValue("Bearer \(accessToken)", forHTTPHeaderField: "Authorization")
+            request.setValue("Bearer \(accessTokenGeneral)", forHTTPHeaderField: "Authorization")
             
             URLSession.shared.dataTask(with: request) { data, response, error in
                 if let data = data {
@@ -246,11 +238,10 @@ struct HomeView: View {
             
             var request = URLRequest(url: url)
             request.httpMethod = "GET"
-            request.setValue("Bearer \(test)", forHTTPHeaderField: "Authorization")
+            request.setValue("Bearer \(accessTokenUser)", forHTTPHeaderField: "Authorization")
             
             URLSession.shared.dataTask(with: request) { data, response, error in
                 if let data = data {
-                    print("Response Data:\n\(String(data: data, encoding: .utf8) ?? "")")
                     do {
                         let user = try JSONDecoder().decode(UserModel.self, from: data)
                         DispatchQueue.main.async {
@@ -268,15 +259,13 @@ struct HomeView: View {
     }
     
     func authenticateUser() {
-        // Define the Spotify authentication URL
         let authURLString = "https://accounts.spotify.com/authorize" +
         "?client_id=\(clientId)" +
         "&response_type=token" +
         "&redirect_uri=\(redirectUri)" +
-        "&scope=user-read-private" // Add the required scopes
+        "&scope=user-read-private"
         
         if let authURL = URL(string: authURLString) {
-            // Use the first window scene to present the SafariViewController
             if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
                 let safariViewController = SFSafariViewController(url: authURL)
                 windowScene.windows.first?.rootViewController?.present(safariViewController, animated: true, completion: nil)
@@ -284,22 +273,23 @@ struct HomeView: View {
         }
     }
     
-    func extractAccessToken(from url: URL) -> String? {
-        guard let components = URLComponents(url: url, resolvingAgainstBaseURL: true),
-              let fragment = components.fragment else {
-            return nil
-        }
-        
-        let queryParams = fragment.components(separatedBy: "&")
-        for queryParam in queryParams {
-            let keyValue = queryParam.components(separatedBy: "=")
-            if keyValue.count == 2 && keyValue[0] == "access_token" {
-                return keyValue[1]
+    func extractAccessToken(from url: URL) {
+        if let fragment = url.fragment {
+            let parameters = fragment
+                .components(separatedBy: "&")
+                .map { $0.components(separatedBy: "=") }
+                .reduce(into: [String: String]()) { result, pair in
+                    if pair.count == 2 {
+                        result[pair[0]] = pair[1]
+                    }
+                }
+
+            if let accessTokenUser = parameters["access_token"] {
+                self.accessTokenUser = accessTokenUser
             }
         }
-
-        return nil
     }
+
 }
 
 #Preview {
