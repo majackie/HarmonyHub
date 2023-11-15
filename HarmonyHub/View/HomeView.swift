@@ -30,6 +30,8 @@ struct HomeView: View {
     
     @State private var error: String? = nil
     @State private var selectedItem: String = ""
+    @State private var selectedType: String = ""
+    @State private var selectedTime: String = ""
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -38,6 +40,7 @@ struct HomeView: View {
                 Text("Album").tag("Album")
                 Text("Playlist").tag("Playlist")
                 Text("User").tag("User")
+                Text("Self").tag("Self")
             }
             .pickerStyle(SegmentedPickerStyle())
             
@@ -122,14 +125,28 @@ struct HomeView: View {
                     // ProgressView()
                 }
                 .frame(width: 120, height: 120)
-                
-                Spacer()
-                
+            } else if selectedItem == "Self" {
                 if accessTokenUser.isEmpty {
                     Button("Authenticate\n") {
                         authenticateUser()
                     }
                 } else {
+                    HStack{
+                        Text("Type: ")
+                        Picker("Select Type", selection: $selectedType) {
+                            Text("Artists").tag("artists")
+                            Text("Tracks").tag("tracks")
+                        }
+                        
+                        Spacer()
+                        
+                        Text("Time: ")
+                        Picker("Select Time", selection: $selectedTime) {
+                            Text("Several Years").tag("short_term")
+                            Text("Six Months").tag("medium_term")
+                            Text("Four Weeks").tag("long_term")
+                        }
+                    }
                     Button("Submit") {
                         getSelfInfo()
                     }
@@ -145,8 +162,6 @@ struct HomeView: View {
                     }
                     .frame(width: 120, height: 120)
                 }
-                
-                Spacer()
             }
             
             Spacer()
