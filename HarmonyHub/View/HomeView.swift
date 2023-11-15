@@ -237,7 +237,6 @@ struct HomeView: View {
                             .listStyle(PlainListStyle())
                         }
                     } else if (selectedType == "tracks") {
-                        // iterate through topTrackInfo to print item.name, item.popularity, image.url
                         if let topTracks = topTrackInfo?.items {
                             List(topTracks, id: \.id) { topTrack in
                                 HStack {
