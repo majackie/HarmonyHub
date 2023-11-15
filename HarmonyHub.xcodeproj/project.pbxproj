@@ -17,6 +17,8 @@
 		8F4FA72A2B005EF90082153D /* AlbumModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F4FA7292B005EF90082153D /* AlbumModel.swift */; };
 		8F4FA72C2B006C070082153D /* PlaylistModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F4FA72B2B006C070082153D /* PlaylistModel.swift */; };
 		8F4FA72E2B0070E90082153D /* UserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F4FA72D2B0070E90082153D /* UserModel.swift */; };
+		8F62149D2B044B740097E95C /* TopArtistModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F62149C2B044B740097E95C /* TopArtistModel.swift */; };
+		8F62149F2B046E090097E95C /* TopTrackModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F62149E2B046E090097E95C /* TopTrackModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -31,6 +33,8 @@
 		8F4FA7292B005EF90082153D /* AlbumModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AlbumModel.swift; sourceTree = "<group>"; };
 		8F4FA72B2B006C070082153D /* PlaylistModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PlaylistModel.swift; sourceTree = "<group>"; };
 		8F4FA72D2B0070E90082153D /* UserModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UserModel.swift; sourceTree = "<group>"; };
+		8F62149C2B044B740097E95C /* TopArtistModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopArtistModel.swift; sourceTree = "<group>"; };
+		8F62149E2B046E090097E95C /* TopTrackModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopTrackModel.swift; sourceTree = "<group>"; };
 		8F74F4B42B035009005889EA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -89,6 +93,8 @@
 				8F4FA7292B005EF90082153D /* AlbumModel.swift */,
 				8F4FA72B2B006C070082153D /* PlaylistModel.swift */,
 				8F4FA72D2B0070E90082153D /* UserModel.swift */,
+				8F62149C2B044B740097E95C /* TopArtistModel.swift */,
+				8F62149E2B046E090097E95C /* TopTrackModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -190,11 +196,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				8F4FA71D2AFF95380082153D /* HomeView.swift in Sources */,
+				8F62149D2B044B740097E95C /* TopArtistModel.swift in Sources */,
 				8F4FA72A2B005EF90082153D /* AlbumModel.swift in Sources */,
 				8F4FA72E2B0070E90082153D /* UserModel.swift in Sources */,
 				8F4FA72C2B006C070082153D /* PlaylistModel.swift in Sources */,
 				8F4FA7042AFDDC040082153D /* ContentView.swift in Sources */,
 				8F4FA7272B005C230082153D /* ArtistModel.swift in Sources */,
+				8F62149F2B046E090097E95C /* TopTrackModel.swift in Sources */,
 				8F4FA7022AFDDC040082153D /* HarmonyHubApp.swift in Sources */,
 				8F4FA71F2AFF953F0082153D /* AboutView.swift in Sources */,
 			);

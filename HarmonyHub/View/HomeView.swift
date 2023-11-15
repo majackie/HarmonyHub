@@ -17,6 +17,7 @@ struct HomeView: View {
     @State private var accessTokenGeneral: String = ""
     @State private var accessTokenUser: String = ""
     
+    // empty string
     @State private var artistId: String = "0Y4inQK6OespitzD6ijMwb"
     @State private var albumId: String = "43uErencdmuTRFZPG3zXL1"
     @State private var playlistId: String = "37i9dQZF1DZ06evO0vFpVC"
@@ -27,11 +28,14 @@ struct HomeView: View {
     @State private var playlistInfo: PlaylistModel? = nil
     @State private var userInfo: UserModel? = nil
     @State private var selfInfo: UserModel? = nil
+    @State private var topArtistInfo: TopArtistModel? = nil
+    @State private var topTrackInfo: TopTrackModel? = nil
     
     @State private var error: String? = nil
     @State private var selectedItem: String = ""
-    @State private var selectedType: String = ""
-    @State private var selectedTime: String = ""
+    @State private var selectedType: String = "artists"
+    @State private var selectedTimeRange: String = "short_term"
+    @State private var selectedLimit: String = "5"
     
     var body: some View {
         VStack(alignment: .leading) {
@@ -53,21 +57,28 @@ struct HomeView: View {
                 Button("Submit") {
                     getArtistInfo()
                 }
-                Text("Artist: \(artistInfo?.name ?? "")")
-                Text(artistInfo?.followers?.total ?? 0 > 0 ? "Followers: \(artistInfo!.followers!.total!)" : "Followers: ")
-                if let genres = artistInfo?.genres {
-                    Text("Genres:")
-                    ForEach(genres, id: \.self) { genre in
-                        Text("- \(genre)")
+                HStack {
+                    VStack(alignment: .leading) {
+                        Text("Artist: \(artistInfo?.name ?? "")")
+                        Text(artistInfo?.followers?.total ?? 0 > 0 ? "Followers: \(artistInfo!.followers!.total!)" : "Followers: ")
+                        if let genres = artistInfo?.genres {
+                            Text("Genres:")
+                            ForEach(genres, id: \.self) { genre in
+                                Text("- \(genre)")
+                            }
+                        }
+                        Text(artistInfo?.popularity ?? 0 > 0 ? "Popularity: \(artistInfo!.popularity!)" : "Popularity: ")
                     }
+                    
+                    Spacer()
+                    
+                    AsyncImage(url: URL(string: artistInfo?.images?.first?.url ?? "")) { image in
+                        image.resizable()
+                    } placeholder: {
+                        // ProgressView()
+                    }
+                    .frame(width: 120, height: 120)
                 }
-                Text(artistInfo?.popularity ?? 0 > 0 ? "Popularity: \(artistInfo!.popularity!)" : "Popularity: ")
-                AsyncImage(url: URL(string: artistInfo?.images?.first?.url ?? "")) { image in
-                    image.resizable()
-                } placeholder: {
-                    // ProgressView()
-                }
-                .frame(width: 120, height: 120)
             } else if selectedItem == "Album" {
                 HStack {
                     Text("Album ID: ")
@@ -77,21 +88,28 @@ struct HomeView: View {
                 Button("Submit") {
                     getAlbumInfo()
                 }
-                Text("Album: \(albumInfo?.name ?? "")")
-                if let artists = albumInfo?.artists {
-                    Text("Artists:")
-                    ForEach(artists, id: \.id) { artist in
-                        Text("- \(artist.name ?? "")")
+                HStack {
+                    VStack(alignment: .leading) {
+                        Text("Album: \(albumInfo?.name ?? "")")
+                        if let artists = albumInfo?.artists {
+                            Text("Artists:")
+                            ForEach(artists, id: \.id) { artist in
+                                Text("- \(artist.name ?? "")")
+                            }
+                        }
+                        Text("Release Date: \(albumInfo?.release_date ?? "")")
+                        Text(albumInfo?.total_tracks ?? 0 > 0 ? "Total Tracks: \(albumInfo!.total_tracks!)" : "Total Tracks: ")
                     }
+                    
+                    Spacer()
+                    
+                    AsyncImage(url: URL(string: albumInfo?.images?.first?.url ?? "")) { image in
+                        image.resizable()
+                    } placeholder: {
+                        // ProgressView()
+                    }
+                    .frame(width: 120, height: 120)
                 }
-                Text("Release Date: \(albumInfo?.release_date ?? "")")
-                Text(albumInfo?.total_tracks ?? 0 > 0 ? "Total Tracks: \(albumInfo!.total_tracks!)" : "Total Tracks: ")
-                AsyncImage(url: URL(string: albumInfo?.images?.first?.url ?? "")) { image in
-                    image.resizable()
-                } placeholder: {
-                    // ProgressView()
-                }
-                .frame(width: 120, height: 120)
             } else if selectedItem == "Playlist" {
                 HStack {
                     Text("Playlist ID: ")
@@ -101,14 +119,21 @@ struct HomeView: View {
                 Button("Submit") {
                     getPlaylistInfo()
                 }
-                Text("Playlist: \(playlistInfo?.name ?? "")")
-                Text("Owner: \(playlistInfo?.owner?.display_name ?? "")")
-                AsyncImage(url: URL(string: playlistInfo?.images?.first?.url ?? "")) { image in
-                    image.resizable()
-                } placeholder: {
-                    // ProgressView()
+                HStack {
+                    VStack(alignment: .leading) {
+                        Text("Playlist: \(playlistInfo?.name ?? "")")
+                        Text("Owner: \(playlistInfo?.owner?.display_name ?? "")")
+                    }
+                    
+                    Spacer()
+                    
+                    AsyncImage(url: URL(string: playlistInfo?.images?.first?.url ?? "")) { image in
+                        image.resizable()
+                    } placeholder: {
+                        // ProgressView()
+                    }
+                    .frame(width: 120, height: 120)
                 }
-                .frame(width: 120, height: 120)
             } else if selectedItem == "User" {
                 HStack {
                     Text("User ID: ")
@@ -118,13 +143,20 @@ struct HomeView: View {
                 Button("Submit") {
                     getUserInfo()
                 }
-                Text("Name: \(userInfo?.display_name ?? "")")
-                AsyncImage(url: URL(string: userInfo?.images?.first?.url ?? "")) { image in
-                    image.resizable()
-                } placeholder: {
-                    // ProgressView()
+                HStack {
+                    VStack(alignment: .leading) {
+                        Text("Name: \(userInfo?.display_name ?? "")")
+                    }
+                    
+                    Spacer()
+                    
+                    AsyncImage(url: URL(string: userInfo?.images?.first?.url ?? "")) { image in
+                        image.resizable()
+                    } placeholder: {
+                        // ProgressView()
+                    }
+                    .frame(width: 120, height: 120)
                 }
-                .frame(width: 120, height: 120)
             } else if selectedItem == "Self" {
                 if accessTokenUser.isEmpty {
                     Button("Authenticate\n") {
@@ -141,26 +173,101 @@ struct HomeView: View {
                         Spacer()
                         
                         Text("Time: ")
-                        Picker("Select Time", selection: $selectedTime) {
-                            Text("Several Years").tag("short_term")
+                        Picker("Select Time Range", selection: $selectedTimeRange) {
+                            Text("Four Weeks").tag("short_term")
                             Text("Six Months").tag("medium_term")
-                            Text("Four Weeks").tag("long_term")
+                            Text("Years").tag("long_term")
                         }
                     }
                     Button("Submit") {
                         getSelfInfo()
+                        if (selectedType == "artists") {
+                            getTopArtistInfo()
+                        } else if (selectedType == "tracks") {
+                            getTopTrackInfo()
+                        }
+                        
                     }
-                    Text("Country: \(selfInfo?.country ?? "")")
-                    Text("Display Name: \(selfInfo?.display_name ?? "")")
-                    Text("Email: \(selfInfo?.email ?? "")")
-                    Text(selfInfo?.followers?.total ?? 0 > 0 ? "Followers: \(selfInfo!.followers!.total!)" : "Followers: ")
-                    Text("Premium: \(selfInfo?.product ?? "")")
-                    AsyncImage(url: URL(string: selfInfo?.images?.first?.url ?? "")) { image in
-                        image.resizable()
-                    } placeholder: {
-                        // ProgressView()
+                    
+                    HStack {
+                        VStack(alignment: .leading) {
+                            Text("Country: \(selfInfo?.country ?? "")")
+                            Text("Display Name: \(selfInfo?.display_name ?? "")")
+                            Text("Email: \(selfInfo?.email ?? "")")
+                            Text(selfInfo?.followers?.total ?? 0 > 0 ? "Followers: \(selfInfo!.followers!.total!)" : "Followers: ")
+                            Text("Premium: \(selfInfo?.product ?? "")")
+                        }
+                        
+                        Spacer()
+                        
+                        AsyncImage(url: URL(string: selfInfo?.images?.first?.url ?? "")) { image in
+                            image.resizable()
+                        } placeholder: {
+                            // ProgressView()
+                        }
+                        .frame(width: 120, height: 120)
                     }
-                    .frame(width: 120, height: 120)
+                    
+                    if (selectedType == "artists") {
+                        if let topItems = topArtistInfo?.items {
+                            List(topItems, id: \.id) { topItem in
+                                HStack{
+                                    VStack(alignment: .leading) {
+                                        Text("Artist: \(topItem.name ?? "")")
+                                        Text(topItem.popularity ?? 0 > 0 ? "Popularity: \(topItem.popularity!)" : "Popularity: ")
+                                        
+                                        if let genres = topItem.genres {
+                                            Text("Genres:")
+                                            ForEach(genres, id: \.self) { genre in
+                                                Text("- \(genre)")
+                                            }
+                                        }
+                                    }
+                                    
+                                    Spacer()
+                                    
+                                    AsyncImage(url: URL(string: topItem.images?.first?.url ?? "")) { image in
+                                        image.resizable()
+                                    } placeholder: {
+                                        // ProgressView()
+                                    }
+                                    .frame(width: 120, height: 120)
+                                }
+                            }
+                            .listStyle(PlainListStyle())
+                        }
+                    } else if (selectedType == "tracks") {
+                        // iterate through topTrackInfo to print item.name, item.popularity, image.url
+                        if let topTracks = topTrackInfo?.items {
+                            List(topTracks, id: \.id) { topTrack in
+                                HStack {
+                                    VStack(alignment: .leading) {
+                                        Text("Track: \(topTrack.name ?? "")")
+                                        if let album = topTrack.album {
+                                            Text("Album: \(album.name ?? "")")
+                                        }
+                                        if let artists = topTrack.artists {
+                                            Text("Artists:")
+                                            ForEach(artists, id: \.id) { artist in
+                                                Text("- \(artist.name ?? "")")
+                                            }
+                                        }
+                                        Text(topTrack.popularity ?? 0 > 0 ? "Popularity: \(topTrack.popularity!)" : "Popularity: ")
+                                    }
+                                    
+                                    Spacer()
+                                    
+                                    AsyncImage(url: URL(string: topTrack.album?.images?.first?.url ?? "")) { image in
+                                        image.resizable()
+                                    } placeholder: {
+                                        // ProgressView()
+                                    }
+                                    .frame(width: 120, height: 120)
+                                }
+                            }
+                            .listStyle(PlainListStyle())
+                        }
+                    }
                 }
             }
             
@@ -317,7 +424,6 @@ struct HomeView: View {
             
             URLSession.shared.dataTask(with: request) { data, response, error in
                 if let data = data {
-                    print("Response Data:\n\(String(data: data, encoding: .utf8) ?? "")")
                     do {
                         let user = try JSONDecoder().decode(UserModel.self, from: data)
                         DispatchQueue.main.async {
@@ -345,11 +451,64 @@ struct HomeView: View {
         
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let data = data {
-                print("Response Data:\n\(String(data: data, encoding: .utf8) ?? "")")
                 do {
                     let user = try JSONDecoder().decode(UserModel.self, from: data)
                     DispatchQueue.main.async {
                         self.selfInfo = user
+                    }
+                } catch {
+                    print(error.localizedDescription)
+                    self.error = "Error parsing user info: \(error.localizedDescription)"
+                }
+            } else if let error = error {
+                self.error = "Network error: \(error.localizedDescription)"
+            }
+        }.resume()
+    }
+    
+    func getTopArtistInfo() {
+        guard let url = URL(string: "https://api.spotify.com/v1/me/top/\(selectedType)?time_range=\(selectedTimeRange)&limit=\(selectedLimit)&offset=0") else {
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(accessTokenUser)", forHTTPHeaderField: "Authorization")
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let data = data {
+                print("Response Data:\n\(String(data: data, encoding: .utf8) ?? "")")
+                do {
+                    let user = try JSONDecoder().decode(TopArtistModel.self, from: data)
+                    DispatchQueue.main.async {
+                        self.topArtistInfo = user
+                    }
+                } catch {
+                    print(error.localizedDescription)
+                    self.error = "Error parsing user info: \(error.localizedDescription)"
+                }
+            } else if let error = error {
+                self.error = "Network error: \(error.localizedDescription)"
+            }
+        }.resume()
+    }
+    
+    func getTopTrackInfo() {
+        guard let url = URL(string: "https://api.spotify.com/v1/me/top/\(selectedType)?time_range=\(selectedTimeRange)&limit=\(selectedLimit)&offset=0") else {
+            return
+        }
+        
+        var request = URLRequest(url: url)
+        request.httpMethod = "GET"
+        request.setValue("Bearer \(accessTokenUser)", forHTTPHeaderField: "Authorization")
+        
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let data = data {
+                print("Response Data:\n\(String(data: data, encoding: .utf8) ?? "")")
+                do {
+                    let user = try JSONDecoder().decode(TopTrackModel.self, from: data)
+                    DispatchQueue.main.async {
+                        self.topTrackInfo = user
                     }
                 } catch {
                     print(error.localizedDescription)
@@ -367,7 +526,8 @@ struct HomeView: View {
         "&response_type=token" +
         "&redirect_uri=\(redirectUri)" +
         "&scope=user-read-private" +
-        "%20user-read-email"
+        "%20user-read-email" +
+        "%20user-top-read"
         
         if let authURL = URL(string: authURLString) {
             if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
