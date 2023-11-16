@@ -30,8 +30,10 @@ struct HomeView: View {
     @State private var selfInfo: UserModel? = nil
     @State private var topArtistInfo: TopArtistModel? = nil
     @State private var topTrackInfo: TopTrackModel? = nil
-    @State private var severalTrackIdArray: [String]? = []
-    @State private var recommendationInfo: RecommendationModel? = nil
+    @State private var topArtistIdArray: [String]? = []
+    @State private var topTrackIdArray: [String]? = []
+    @State private var artistRecommendationInfo: RecommendationModel? = nil
+    @State private var trackRecommendationInfo: RecommendationModel? = nil
     
     @State private var error: String? = nil
     @State private var selectedItem: String = ""
@@ -602,25 +604,21 @@ struct HomeView: View {
     }
     
     func getRecommendationArtists() {
-        
-    }
-    
-    func getRecommendationTracks() {
-        self.severalTrackIdArray!.removeAll()
-        if selectedType == "tracks" && topTrackInfo != nil {
-            if let topTracks = topTrackInfo?.items {
-                for topTrack in topTracks {
-                    if let trackId = topTrack.id {
-                        self.severalTrackIdArray!.append(trackId)
+        self.topArtistIdArray!.removeAll()
+        if selectedType == "artists" && topArtistInfo != nil {
+            if let topArtists = topArtistInfo?.items {
+                for topArtist in topArtists {
+                    if let artistId = topArtist.id {
+                        self.topArtistIdArray!.append(artistId)
                     }
                 }
             }
         }
         
-        let encodedTrackIdsString = severalTrackIdArray!.joined(separator: "%2C")
+        let encodedString = topArtistIdArray!.joined(separator: "%2C")
         
         getAccessToken {
-            guard let url = URL(string: "https://api.spotify.com/v1/recommendations?seed_tracks=\(encodedTrackIdsString)") else {
+            guard let url = URL(string: "https://api.spotify.com/v1/recommendations?seed_artists=\(encodedString)") else {
                 return
             }
             
@@ -634,7 +632,49 @@ struct HomeView: View {
                     do {
                         let user = try JSONDecoder().decode(RecommendationModel.self, from: data)
                         DispatchQueue.main.async {
-                            self.recommendationInfo = user
+                            self.artistRecommendationInfo = user
+                        }
+                    } catch {
+                        print(error.localizedDescription)
+                        self.error = "Error parsing user info: \(error.localizedDescription)"
+                    }
+                } else if let error = error {
+                    self.error = "Network error: \(error.localizedDescription)"
+                }
+            }.resume()
+        }
+    }
+    
+    func getRecommendationTracks() {
+        self.topTrackIdArray!.removeAll()
+        if selectedType == "tracks" && topTrackInfo != nil {
+            if let topTracks = topTrackInfo?.items {
+                for topTrack in topTracks {
+                    if let trackId = topTrack.id {
+                        self.topTrackIdArray!.append(trackId)
+                    }
+                }
+            }
+        }
+        
+        let encodedString = topTrackIdArray!.joined(separator: "%2C")
+        
+        getAccessToken {
+            guard let url = URL(string: "https://api.spotify.com/v1/recommendations?seed_tracks=\(encodedString)") else {
+                return
+            }
+            
+            var request = URLRequest(url: url)
+            request.httpMethod = "GET"
+            request.setValue("Bearer \(accessTokenGeneral)", forHTTPHeaderField: "Authorization")
+            
+            URLSession.shared.dataTask(with: request) { data, response, error in
+                if let data = data {
+                    print("Response Data:\n\(String(data: data, encoding: .utf8) ?? "")")
+                    do {
+                        let user = try JSONDecoder().decode(RecommendationModel.self, from: data)
+                        DispatchQueue.main.async {
+                            self.trackRecommendationInfo = user
                         }
                     } catch {
                         print(error.localizedDescription)
