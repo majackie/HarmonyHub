@@ -54,9 +54,12 @@ struct HomeView: View {
                     TextField("", text: $artistId)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                 }
+                
                 Button("Submit") {
                     getArtistInfo()
                 }
+                .buttonStyle(.borderedProminent)
+                
                 if (artistInfo != nil) {
                     HStack {
                         VStack(alignment: .leading) {
@@ -87,9 +90,12 @@ struct HomeView: View {
                     TextField("", text: $albumId)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                 }
+                
                 Button("Submit") {
                     getAlbumInfo()
                 }
+                .buttonStyle(.borderedProminent)
+                
                 if (albumInfo != nil) {
                     HStack {
                         VStack(alignment: .leading) {
@@ -120,9 +126,12 @@ struct HomeView: View {
                     TextField("", text: $playlistId)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                 }
+                
                 Button("Submit") {
                     getPlaylistInfo()
                 }
+                .buttonStyle(.borderedProminent)
+                
                 if (playlistInfo != nil) {
                     HStack {
                         VStack(alignment: .leading) {
@@ -146,9 +155,12 @@ struct HomeView: View {
                     TextField("", text: $userId)
                         .textFieldStyle(RoundedBorderTextFieldStyle())
                 }
+                
                 Button("Submit") {
                     getUserInfo()
                 }
+                .buttonStyle(.borderedProminent)
+                
                 if (userInfo != nil) {
                     HStack {
                         VStack(alignment: .leading) {
@@ -170,6 +182,7 @@ struct HomeView: View {
                     Button("Authenticate") {
                         authenticateUser()
                     }
+                    .buttonStyle(.borderedProminent)
                 } else {
                     HStack{
                         Text("Type:")
@@ -190,13 +203,25 @@ struct HomeView: View {
                             }
                         }
                     }
-                    Button("Submit") {
-                        if (selectedType == "self") {
-                            getSelfInfo()
-                        } else if (selectedType == "artists") {
-                            getTopArtistInfo()
-                        } else if (selectedType == "tracks") {
-                            getTopTrackInfo()
+                    HStack {
+                        Button("Submit") {
+                            if (selectedType == "self") {
+                                getSelfInfo()
+                            } else if (selectedType == "artists") {
+                                getTopArtistInfo()
+                            } else if (selectedType == "tracks") {
+                                getTopTrackInfo()
+                            }
+                        }
+                        .buttonStyle(.borderedProminent)
+                        
+                        Spacer()
+                        
+                        if (selectedType == "tracks" && topTrackInfo != nil) {
+                            Button("Generate") {
+                                // generate new recommended playlist
+                            }
+                            .buttonStyle(.borderedProminent)
                         }
                     }
                     
