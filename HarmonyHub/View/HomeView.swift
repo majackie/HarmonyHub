@@ -19,8 +19,8 @@ struct HomeView: View {
     
     // empty string
     @State private var artistId: String = "0Y4inQK6OespitzD6ijMwb"
-    @State private var albumId: String = "43uErencdmuTRFZPG3zXL1"
-    @State private var playlistId: String = "37i9dQZF1DZ06evO0vFpVC"
+    @State private var albumId: String = "1HMLpmZAnNyl9pxvOnTovV"
+    @State private var playlistId: String = "4zfgRmGv5piy8B2FbBuJx4"
     @State private var userId: String = "_beepee"
     
     @State private var artistInfo: ArtistModel? = nil
@@ -144,6 +144,8 @@ struct HomeView: View {
                         VStack(alignment: .leading) {
                             Text("Playlist: \(playlistInfo?.name ?? "")")
                             Text("Owner: \(playlistInfo?.owner?.display_name ?? "")")
+                            Text(playlistInfo?.tracks?.total ?? 0 > 0 ?
+                                 "Total Tracks: \(playlistInfo!.tracks!.total!)" : "Total Tracks: ")
                         }
                         
                         Spacer()
