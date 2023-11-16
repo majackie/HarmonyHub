@@ -34,6 +34,7 @@ struct HomeView: View {
     @State private var topTrackIdArray: [String]? = []
     @State private var artistRecommendationInfo: RecommendationModel? = nil
     @State private var trackRecommendationInfo: RecommendationModel? = nil
+    @State private var newPlaylistInfo: PlaylistModel? = nil
     
     @State private var error: String? = nil
     @State private var selectedItem: String = ""
@@ -221,12 +222,12 @@ struct HomeView: View {
                         
                         Spacer()
                         
-                        if (selectedType == "artists" && topArtistInfo != nil) {
+                        if (selectedType == "artists" && topArtistInfo != nil && selfInfo != nil) {
                             Button("Generate") {
                                 getRecommendationArtists()
                             }
                             .buttonStyle(.borderedProminent)
-                        } else if (selectedType == "tracks" && topTrackInfo != nil) {
+                        } else if (selectedType == "tracks" && topTrackInfo != nil && selfInfo != nil) {
                             Button("Generate") {
                                 getRecommendationTracks()
                             }
@@ -379,7 +380,8 @@ struct HomeView: View {
         "&redirect_uri=\(redirectUri)" +
         "&scope=user-read-private" +
         "%20user-read-email" +
-        "%20user-top-read"
+        "%20user-top-read" +
+        "%20playlist-modify-public"
         
         if let authURL = URL(string: authURLString) {
             if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
@@ -628,7 +630,7 @@ struct HomeView: View {
             
             URLSession.shared.dataTask(with: request) { data, response, error in
                 if let data = data {
-                    print("Response Data:\n\(String(data: data, encoding: .utf8) ?? "")")
+//                    print("Response Data:\n\(String(data: data, encoding: .utf8) ?? "")")
                     do {
                         let user = try JSONDecoder().decode(RecommendationModel.self, from: data)
                         DispatchQueue.main.async {
@@ -670,11 +672,12 @@ struct HomeView: View {
             
             URLSession.shared.dataTask(with: request) { data, response, error in
                 if let data = data {
-                    print("Response Data:\n\(String(data: data, encoding: .utf8) ?? "")")
+//                    print("Response Data:\n\(String(data: data, encoding: .utf8) ?? "")")
                     do {
                         let user = try JSONDecoder().decode(RecommendationModel.self, from: data)
                         DispatchQueue.main.async {
                             self.trackRecommendationInfo = user
+                            createPlaylist()
                         }
                     } catch {
                         print(error.localizedDescription)
@@ -686,6 +689,45 @@ struct HomeView: View {
             }.resume()
         }
     }
+    
+    func createPlaylist() {
+        guard let url = URL(string: "https://api.spotify.com/v1/users/\(selfInfo!.id!)/playlists") else {
+            return
+        }
+
+        let playlistName = Int(Date().timeIntervalSince1970 * 1000)
+        let playlistData: [String: Any] = [
+            "name": "\(playlistName)"
+        ]
+
+        guard let requestBody = try? JSONSerialization.data(withJSONObject: playlistData) else {
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(accessTokenUser)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = requestBody
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let data = data {
+                print("Response Data:\n\(String(data: data, encoding: .utf8) ?? "")")
+                do {
+                    let user = try JSONDecoder().decode(PlaylistModel.self, from: data)
+                    DispatchQueue.main.async {
+                        self.newPlaylistInfo = user
+                    }
+                } catch {
+                    print(error.localizedDescription)
+                    self.error = "Error parsing user info: \(error.localizedDescription)"
+                }
+            } else if let error = error {
+                self.error = "Network error: \(error.localizedDescription)"
+            }
+        }.resume()
+    }
+
 }
 
 #Preview {
