@@ -35,6 +35,8 @@ struct HomeView: View {
     @State private var artistRecommendationInfo: RecommendationModel? = nil
     @State private var trackRecommendationInfo: RecommendationModel? = nil
     @State private var newPlaylistInfo: PlaylistModel? = nil
+    @State private var artistRecommendationUriArray: [String]? = []
+    @State private var trackRecommendationUriArray: [String]? = []
     
     @State private var error: String? = nil
     @State private var selectedItem: String = ""
@@ -712,11 +714,12 @@ struct HomeView: View {
 
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let data = data {
-                print("Response Data:\n\(String(data: data, encoding: .utf8) ?? "")")
+//                print("Response Data:\n\(String(data: data, encoding: .utf8) ?? "")")
                 do {
                     let user = try JSONDecoder().decode(PlaylistModel.self, from: data)
                     DispatchQueue.main.async {
                         self.newPlaylistInfo = user
+                        addTrackToPlaylist()
                     }
                 } catch {
                     print(error.localizedDescription)
@@ -728,6 +731,54 @@ struct HomeView: View {
         }.resume()
     }
 
+    func addTrackToPlaylist() {
+        self.trackRecommendationUriArray!.removeAll()
+        if selectedType == "tracks" && topTrackInfo != nil {
+            if let trackRecommendation = trackRecommendationInfo?.tracks {
+                for item in trackRecommendation {
+                    if let trackUri = item.uri {
+                        self.trackRecommendationUriArray!.append(trackUri)
+                    }
+                }
+            }
+        }
+        
+        guard let url = URL(string: "https://api.spotify.com/v1/playlists/\(newPlaylistInfo!.id!)/tracks") else {
+            return
+        }
+
+        let playlistData: [String: Any] = [
+            "uris": trackRecommendationUriArray!
+        ]
+
+        guard let requestBody = try? JSONSerialization.data(withJSONObject: playlistData) else {
+            return
+        }
+
+        var request = URLRequest(url: url)
+        request.httpMethod = "POST"
+        request.setValue("Bearer \(accessTokenUser)", forHTTPHeaderField: "Authorization")
+        request.setValue("application/json", forHTTPHeaderField: "Content-Type")
+        request.httpBody = requestBody
+
+        URLSession.shared.dataTask(with: request) { data, response, error in
+            if let data = data {
+                print("Response Data:\n\(String(data: data, encoding: .utf8) ?? "")")
+                do {
+//                    let user = try JSONDecoder().decode(PlaylistModel.self, from: data)
+//                    DispatchQueue.main.async {
+//                        self.newPlaylistInfo = user
+//                    }
+                    print("test")
+                } catch {
+                    print(error.localizedDescription)
+                    self.error = "Error parsing user info: \(error.localizedDescription)"
+                }
+            } else if let error = error {
+                self.error = "Network error: \(error.localizedDescription)"
+            }
+        }.resume()
+    }
 }
 
 #Preview {
