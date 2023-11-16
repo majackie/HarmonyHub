@@ -632,11 +632,11 @@ struct HomeView: View {
             
             URLSession.shared.dataTask(with: request) { data, response, error in
                 if let data = data {
-//                    print("Response Data:\n\(String(data: data, encoding: .utf8) ?? "")")
                     do {
                         let user = try JSONDecoder().decode(RecommendationModel.self, from: data)
                         DispatchQueue.main.async {
                             self.artistRecommendationInfo = user
+                            createPlaylist()
                         }
                     } catch {
                         print(error.localizedDescription)
@@ -674,7 +674,6 @@ struct HomeView: View {
             
             URLSession.shared.dataTask(with: request) { data, response, error in
                 if let data = data {
-//                    print("Response Data:\n\(String(data: data, encoding: .utf8) ?? "")")
                     do {
                         let user = try JSONDecoder().decode(RecommendationModel.self, from: data)
                         DispatchQueue.main.async {
@@ -714,7 +713,6 @@ struct HomeView: View {
 
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let data = data {
-//                print("Response Data:\n\(String(data: data, encoding: .utf8) ?? "")")
                 do {
                     let user = try JSONDecoder().decode(PlaylistModel.self, from: data)
                     DispatchQueue.main.async {
@@ -732,8 +730,22 @@ struct HomeView: View {
     }
 
     func addTrackToPlaylist() {
-        self.trackRecommendationUriArray!.removeAll()
+        var playlistData: [String: Any] = [:]
+        
+        if selectedType == "artists" && topArtistInfo != nil {
+            self.artistRecommendationUriArray!.removeAll()
+            if let artistRecommendation = artistRecommendationInfo?.tracks {
+                for item in artistRecommendation {
+                    if let artistUri = item.uri {
+                        self.artistRecommendationUriArray!.append(artistUri)
+                    }
+                }
+            }
+            playlistData["uris"] = self.artistRecommendationUriArray!
+        }
+        
         if selectedType == "tracks" && topTrackInfo != nil {
+            self.trackRecommendationUriArray!.removeAll()
             if let trackRecommendation = trackRecommendationInfo?.tracks {
                 for item in trackRecommendation {
                     if let trackUri = item.uri {
@@ -741,16 +753,13 @@ struct HomeView: View {
                     }
                 }
             }
+            playlistData["uris"] = self.trackRecommendationUriArray!
         }
         
         guard let url = URL(string: "https://api.spotify.com/v1/playlists/\(newPlaylistInfo!.id!)/tracks") else {
             return
         }
-
-        let playlistData: [String: Any] = [
-            "uris": trackRecommendationUriArray!
-        ]
-
+        
         guard let requestBody = try? JSONSerialization.data(withJSONObject: playlistData) else {
             return
         }
@@ -762,12 +771,7 @@ struct HomeView: View {
         request.httpBody = requestBody
 
         URLSession.shared.dataTask(with: request) { data, response, error in
-            if let data = data {
-                print("Response Data:\n\(String(data: data, encoding: .utf8) ?? "")")
-                openSpotifyPlaylist()
-            } else if let error = error {
-                self.error = "Network error: \(error.localizedDescription)"
-            }
+            openSpotifyPlaylist()
         }.resume()
     }
     
