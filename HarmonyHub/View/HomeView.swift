@@ -764,20 +764,22 @@ struct HomeView: View {
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let data = data {
                 print("Response Data:\n\(String(data: data, encoding: .utf8) ?? "")")
-                do {
-//                    let user = try JSONDecoder().decode(PlaylistModel.self, from: data)
-//                    DispatchQueue.main.async {
-//                        self.newPlaylistInfo = user
-//                    }
-                    print("test")
-                } catch {
-                    print(error.localizedDescription)
-                    self.error = "Error parsing user info: \(error.localizedDescription)"
-                }
+                openSpotifyPlaylist()
             } else if let error = error {
                 self.error = "Network error: \(error.localizedDescription)"
             }
         }.resume()
+    }
+    
+    func openSpotifyPlaylist() {
+        DispatchQueue.main.async {
+            if let url = URL(string: "https://open.spotify.com/playlist/\(newPlaylistInfo!.id!)") {
+                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+                    let safariViewController = SFSafariViewController(url: url)
+                    windowScene.windows.first?.rootViewController?.present(safariViewController, animated: true, completion: nil)
+                }
+            }
+        }
     }
 }
 
