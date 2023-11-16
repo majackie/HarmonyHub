@@ -167,12 +167,12 @@ struct HomeView: View {
                 }
             } else if selectedItem == "Self" {
                 if accessTokenUser.isEmpty {
-                    Button("Authenticate\n") {
+                    Button("Authenticate") {
                         authenticateUser()
                     }
                 } else {
                     HStack{
-                        Text("Type")
+                        Text("Type:")
                         Picker("Select Type", selection: $selectedType) {
                             Text("Artists").tag("artists")
                             Text("Tracks").tag("tracks")
@@ -180,32 +180,13 @@ struct HomeView: View {
                         
                         Spacer()
                         
-                        Text("Time")
+                        Text("Time:")
                         Picker("Select Time", selection: $selectedTimeRange) {
                             Text("Four Weeks").tag("short_term")
                             Text("Six Months").tag("medium_term")
                             Text("Years").tag("long_term")
                         }
                     }
-                    
-//                    List {
-//                        Picker("Select Type", selection: $selectedType) {
-//                            Text("Artists").tag("artists")
-//                            Text("Tracks").tag("tracks")
-//                        }
-//                        Picker("Select Time Range", selection: $selectedTimeRange) {
-//                            Text("Four Weeks").tag("short_term")
-//                            Text("Six Months").tag("medium_term")
-//                            Text("Years").tag("long_term")
-//                        }
-//                        Picker("Select Limit", selection: $selectedLimit) {
-//                            Text("5").tag("5")
-//                            Text("10").tag("10")
-//                            Text("20").tag("20")
-//                        }
-//                    }
-//                    .listStyle(PlainListStyle())
-                    
                     Button("Submit") {
                         getSelfInfo()
                         if (selectedType == "artists") {
