@@ -19,6 +19,7 @@
 		8F4FA72E2B0070E90082153D /* UserModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F4FA72D2B0070E90082153D /* UserModel.swift */; };
 		8F62149D2B044B740097E95C /* TopArtistModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F62149C2B044B740097E95C /* TopArtistModel.swift */; };
 		8F62149F2B046E090097E95C /* TopTrackModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F62149E2B046E090097E95C /* TopTrackModel.swift */; };
+		8F900B592B05EE30008AB68C /* AudioFeatureModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F900B582B05EE30008AB68C /* AudioFeatureModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -36,6 +37,7 @@
 		8F62149C2B044B740097E95C /* TopArtistModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopArtistModel.swift; sourceTree = "<group>"; };
 		8F62149E2B046E090097E95C /* TopTrackModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopTrackModel.swift; sourceTree = "<group>"; };
 		8F74F4B42B035009005889EA /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = Info.plist; sourceTree = "<group>"; };
+		8F900B582B05EE30008AB68C /* AudioFeatureModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AudioFeatureModel.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,6 +97,7 @@
 				8F4FA72D2B0070E90082153D /* UserModel.swift */,
 				8F62149C2B044B740097E95C /* TopArtistModel.swift */,
 				8F62149E2B046E090097E95C /* TopTrackModel.swift */,
+				8F900B582B05EE30008AB68C /* AudioFeatureModel.swift */,
 			);
 			path = Model;
 			sourceTree = "<group>";
@@ -195,6 +198,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				8F900B592B05EE30008AB68C /* AudioFeatureModel.swift in Sources */,
 				8F4FA71D2AFF95380082153D /* HomeView.swift in Sources */,
 				8F62149D2B044B740097E95C /* TopArtistModel.swift in Sources */,
 				8F4FA72A2B005EF90082153D /* AlbumModel.swift in Sources */,

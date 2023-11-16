@@ -30,6 +30,8 @@ struct HomeView: View {
     @State private var selfInfo: UserModel? = nil
     @State private var topArtistInfo: TopArtistModel? = nil
     @State private var topTrackInfo: TopTrackModel? = nil
+    @State private var severalTrackIdArray: [String]? = []
+    @State private var audioFeatureArray: AudioFeatureModel? = nil
     
     @State private var error: String? = nil
     @State private var selectedItem: String = ""
@@ -219,7 +221,7 @@ struct HomeView: View {
                         
                         if (selectedType == "tracks" && topTrackInfo != nil) {
                             Button("Generate") {
-                                // generate new recommended playlist
+                                getSeveralTracks()
                             }
                             .buttonStyle(.borderedProminent)
                         }
@@ -361,6 +363,47 @@ struct HomeView: View {
                 }
             }
         }.resume()
+    }
+    
+    func authenticateUser() {
+        let authURLString = "https://accounts.spotify.com/authorize" +
+        "?client_id=\(clientId)" +
+        "&response_type=token" +
+        "&redirect_uri=\(redirectUri)" +
+        "&scope=user-read-private" +
+        "%20user-read-email" +
+        "%20user-top-read"
+        
+        if let authURL = URL(string: authURLString) {
+            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
+                let safariViewController = SFSafariViewController(url: authURL)
+                windowScene.windows.first?.rootViewController?.present(safariViewController, animated: true, completion: nil)
+            }
+        }
+    }
+    
+    func extractAccessToken(from url: URL) {
+        if let fragment = url.fragment {
+            let parameters = fragment
+                .components(separatedBy: "&")
+                .map { $0.components(separatedBy: "=") }
+                .reduce(into: [String: String]()) { result, pair in
+                    if pair.count == 2 {
+                        result[pair[0]] = pair[1]
+                    }
+                }
+            
+            if let accessTokenUser = parameters["access_token"] {
+                self.accessTokenUser = accessTokenUser
+                
+                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                   let rootViewController = windowScene.windows.first?.rootViewController {
+                    if let presentedViewController = rootViewController.presentedViewController as? SFSafariViewController {
+                        presentedViewController.dismiss(animated: true, completion: nil)
+                    }
+                }
+            }
+        }
     }
     
     func getArtistInfo() {
@@ -512,7 +555,6 @@ struct HomeView: View {
         
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let data = data {
-                print("Response Data:\n\(String(data: data, encoding: .utf8) ?? "")")
                 do {
                     let user = try JSONDecoder().decode(TopArtistModel.self, from: data)
                     DispatchQueue.main.async {
@@ -539,7 +581,6 @@ struct HomeView: View {
         
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let data = data {
-                print("Response Data:\n\(String(data: data, encoding: .utf8) ?? "")")
                 do {
                     let user = try JSONDecoder().decode(TopTrackModel.self, from: data)
                     DispatchQueue.main.async {
@@ -555,44 +596,45 @@ struct HomeView: View {
         }.resume()
     }
     
-    func authenticateUser() {
-        let authURLString = "https://accounts.spotify.com/authorize" +
-        "?client_id=\(clientId)" +
-        "&response_type=token" +
-        "&redirect_uri=\(redirectUri)" +
-        "&scope=user-read-private" +
-        "%20user-read-email" +
-        "%20user-top-read"
-        
-        if let authURL = URL(string: authURLString) {
-            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
-                let safariViewController = SFSafariViewController(url: authURL)
-                windowScene.windows.first?.rootViewController?.present(safariViewController, animated: true, completion: nil)
+    func getSeveralTracks() {
+        self.severalTrackIdArray!.removeAll()
+        if selectedType == "tracks" && topTrackInfo != nil {
+            if let topTracks = topTrackInfo?.items {
+                for topTrack in topTracks {
+                    if let trackId = topTrack.id {
+                        self.severalTrackIdArray!.append(trackId)
+                    }
+                }
             }
         }
-    }
-    
-    func extractAccessToken(from url: URL) {
-        if let fragment = url.fragment {
-            let parameters = fragment
-                .components(separatedBy: "&")
-                .map { $0.components(separatedBy: "=") }
-                .reduce(into: [String: String]()) { result, pair in
-                    if pair.count == 2 {
-                        result[pair[0]] = pair[1]
-                    }
-                }
-            
-            if let accessTokenUser = parameters["access_token"] {
-                self.accessTokenUser = accessTokenUser
-                
-                if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
-                   let rootViewController = windowScene.windows.first?.rootViewController {
-                    if let presentedViewController = rootViewController.presentedViewController as? SFSafariViewController {
-                        presentedViewController.dismiss(animated: true, completion: nil)
-                    }
-                }
+        
+        let encodedTrackIdsString = severalTrackIdArray!.joined(separator: "%2C")
+        
+        getAccessToken {
+            guard let url = URL(string: "https://api.spotify.com/v1/audio-features?ids=\(encodedTrackIdsString)") else {
+                return
             }
+            
+            var request = URLRequest(url: url)
+            request.httpMethod = "GET"
+            request.setValue("Bearer \(accessTokenGeneral)", forHTTPHeaderField: "Authorization")
+            
+            URLSession.shared.dataTask(with: request) { data, response, error in
+                if let data = data {
+                    print("Response Data:\n\(String(data: data, encoding: .utf8) ?? "")")
+                    do {
+                        let user = try JSONDecoder().decode(AudioFeatureModel.self, from: data)
+                        DispatchQueue.main.async {
+                            self.audioFeatureArray = user
+                        }
+                    } catch {
+                        print(error.localizedDescription)
+                        self.error = "Error parsing user info: \(error.localizedDescription)"
+                    }
+                } else if let error = error {
+                    self.error = "Network error: \(error.localizedDescription)"
+                }
+            }.resume()
         }
     }
 }
