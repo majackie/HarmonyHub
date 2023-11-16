@@ -31,7 +31,7 @@ struct HomeView: View {
     @State private var topArtistInfo: TopArtistModel? = nil
     @State private var topTrackInfo: TopTrackModel? = nil
     @State private var severalTrackIdArray: [String]? = []
-    @State private var audioFeatureArray: AudioFeatureModel? = nil
+    @State private var recommendationInfo: RecommendationModel? = nil
     
     @State private var error: String? = nil
     @State private var selectedItem: String = ""
@@ -219,9 +219,14 @@ struct HomeView: View {
                         
                         Spacer()
                         
-                        if (selectedType == "tracks" && topTrackInfo != nil) {
+                        if (selectedType == "artists" && topArtistInfo != nil) {
                             Button("Generate") {
-                                getSeveralTracks()
+                                getRecommendationArtists()
+                            }
+                            .buttonStyle(.borderedProminent)
+                        } else if (selectedType == "tracks" && topTrackInfo != nil) {
+                            Button("Generate") {
+                                getRecommendationTracks()
                             }
                             .buttonStyle(.borderedProminent)
                         }
@@ -596,7 +601,11 @@ struct HomeView: View {
         }.resume()
     }
     
-    func getSeveralTracks() {
+    func getRecommendationArtists() {
+        
+    }
+    
+    func getRecommendationTracks() {
         self.severalTrackIdArray!.removeAll()
         if selectedType == "tracks" && topTrackInfo != nil {
             if let topTracks = topTrackInfo?.items {
@@ -611,7 +620,7 @@ struct HomeView: View {
         let encodedTrackIdsString = severalTrackIdArray!.joined(separator: "%2C")
         
         getAccessToken {
-            guard let url = URL(string: "https://api.spotify.com/v1/audio-features?ids=\(encodedTrackIdsString)") else {
+            guard let url = URL(string: "https://api.spotify.com/v1/recommendations?seed_tracks=\(encodedTrackIdsString)") else {
                 return
             }
             
@@ -623,9 +632,9 @@ struct HomeView: View {
                 if let data = data {
                     print("Response Data:\n\(String(data: data, encoding: .utf8) ?? "")")
                     do {
-                        let user = try JSONDecoder().decode(AudioFeatureModel.self, from: data)
+                        let user = try JSONDecoder().decode(RecommendationModel.self, from: data)
                         DispatchQueue.main.async {
-                            self.audioFeatureArray = user
+                            self.recommendationInfo = user
                         }
                     } catch {
                         print(error.localizedDescription)
