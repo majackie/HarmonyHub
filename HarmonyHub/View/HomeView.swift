@@ -33,7 +33,7 @@ struct HomeView: View {
     
     @State private var error: String? = nil
     @State private var selectedItem: String = ""
-    @State private var selectedType: String = "artists"
+    @State private var selectedType: String = "self"
     @State private var selectedTimeRange: String = "short_term"
     @State private var selectedLimit: String = "5"
     
@@ -174,29 +174,33 @@ struct HomeView: View {
                     HStack{
                         Text("Type:")
                         Picker("Select Type", selection: $selectedType) {
+                            Text("Self").tag("self")
                             Text("Artists").tag("artists")
                             Text("Tracks").tag("tracks")
                         }
                         
                         Spacer()
                         
-                        Text("Time:")
-                        Picker("Select Time", selection: $selectedTimeRange) {
-                            Text("Four Weeks").tag("short_term")
-                            Text("Six Months").tag("medium_term")
-                            Text("Years").tag("long_term")
+                        if (selectedType != "self") {
+                            Text("Time:")
+                            Picker("Select Time", selection: $selectedTimeRange) {
+                                Text("Four Weeks").tag("short_term")
+                                Text("Six Months").tag("medium_term")
+                                Text("Years").tag("long_term")
+                            }
                         }
                     }
                     Button("Submit") {
-                        getSelfInfo()
-                        if (selectedType == "artists") {
+                        if (selectedType == "self") {
+                            getSelfInfo()
+                        } else if (selectedType == "artists") {
                             getTopArtistInfo()
                         } else if (selectedType == "tracks") {
                             getTopTrackInfo()
                         }
                     }
                     
-                    if (selfInfo != nil) {
+                    if (selectedType == "self" && selfInfo != nil) {
                         HStack {
                             VStack(alignment: .leading) {
                                 Text("Country: \(selfInfo?.country ?? "")")
@@ -215,65 +219,63 @@ struct HomeView: View {
                             }
                             .frame(width: 120, height: 120)
                         }
-                        
-                        if (selectedType == "artists") {
-                            if let topItems = topArtistInfo?.items {
-                                List(topItems, id: \.id) { topItem in
-                                    HStack{
-                                        VStack(alignment: .leading) {
-                                            Text("Artist: \(topItem.name ?? "")")
-                                            Text(topItem.popularity ?? 0 > 0 ? "Popularity: \(topItem.popularity!)" : "Popularity: ")
-                                            
-                                            if let genres = topItem.genres {
-                                                Text("Genres:")
-                                                ForEach(genres, id: \.self) { genre in
-                                                    Text("- \(genre)")
-                                                }
+                    } else if (selectedType == "artists" && topArtistInfo != nil) {
+                        if let topItems = topArtistInfo?.items {
+                            List(topItems, id: \.id) { topItem in
+                                HStack{
+                                    VStack(alignment: .leading) {
+                                        Text("Artist: \(topItem.name ?? "")")
+                                        Text(topItem.popularity ?? 0 > 0 ? "Popularity: \(topItem.popularity!)" : "Popularity: ")
+                                        
+                                        if let genres = topItem.genres {
+                                            Text("Genres:")
+                                            ForEach(genres, id: \.self) { genre in
+                                                Text("- \(genre)")
                                             }
                                         }
-                                        
-                                        Spacer()
-                                        
-                                        AsyncImage(url: URL(string: topItem.images?.first?.url ?? "")) { image in
-                                            image.resizable()
-                                        } placeholder: {
-                                            // ProgressView()
-                                        }
-                                        .frame(width: 120, height: 120)
                                     }
-                                }
-                                .listStyle(PlainListStyle())
-                            }
-                        } else if (selectedType == "tracks") {
-                            if let topTracks = topTrackInfo?.items {
-                                List(topTracks, id: \.id) { topTrack in
-                                    HStack {
-                                        VStack(alignment: .leading) {
-                                            Text("Track: \(topTrack.name ?? "")")
-                                            if let album = topTrack.album {
-                                                Text("Album: \(album.name ?? "")")
-                                            }
-                                            if let artists = topTrack.artists {
-                                                Text("Artists:")
-                                                ForEach(artists, id: \.id) { artist in
-                                                    Text("- \(artist.name ?? "")")
-                                                }
-                                            }
-                                            Text(topTrack.popularity ?? 0 > 0 ? "Popularity: \(topTrack.popularity!)" : "Popularity: ")
-                                        }
-                                        
-                                        Spacer()
-                                        
-                                        AsyncImage(url: URL(string: topTrack.album?.images?.first?.url ?? "")) { image in
-                                            image.resizable()
-                                        } placeholder: {
-                                            // ProgressView()
-                                        }
-                                        .frame(width: 120, height: 120)
+                                    
+                                    Spacer()
+                                    
+                                    AsyncImage(url: URL(string: topItem.images?.first?.url ?? "")) { image in
+                                        image.resizable()
+                                    } placeholder: {
+                                        // ProgressView()
                                     }
+                                    .frame(width: 120, height: 120)
                                 }
-                                .listStyle(PlainListStyle())
                             }
+                            .listStyle(PlainListStyle())
+                        }
+                    } else if (selectedType == "tracks" && topTrackInfo != nil) {
+                        if let topTracks = topTrackInfo?.items {
+                            List(topTracks, id: \.id) { topTrack in
+                                HStack {
+                                    VStack(alignment: .leading) {
+                                        Text("Track: \(topTrack.name ?? "")")
+                                        if let album = topTrack.album {
+                                            Text("Album: \(album.name ?? "")")
+                                        }
+                                        if let artists = topTrack.artists {
+                                            Text("Artists:")
+                                            ForEach(artists, id: \.id) { artist in
+                                                Text("- \(artist.name ?? "")")
+                                            }
+                                        }
+                                        Text(topTrack.popularity ?? 0 > 0 ? "Popularity: \(topTrack.popularity!)" : "Popularity: ")
+                                    }
+                                    
+                                    Spacer()
+                                    
+                                    AsyncImage(url: URL(string: topTrack.album?.images?.first?.url ?? "")) { image in
+                                        image.resizable()
+                                    } placeholder: {
+                                        // ProgressView()
+                                    }
+                                    .frame(width: 120, height: 120)
+                                }
+                            }
+                            .listStyle(PlainListStyle())
                         }
                     }
                 }
