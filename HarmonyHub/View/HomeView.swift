@@ -45,286 +45,361 @@ struct HomeView: View {
     @State private var selectedLimit: String = "5"
     
     var body: some View {
-        VStack(alignment: .leading) {
-            Picker("Select Item", selection: $selectedItem) {
-                Text("Artist").tag("Artist")
-                Text("Album").tag("Album")
-                Text("Playlist").tag("Playlist")
-                Text("User").tag("User")
-                Text("Self").tag("Self")
-            }
-            .pickerStyle(SegmentedPickerStyle())
-            
-            if selectedItem == "Artist" {
-                HStack {
-                    Text("Artist ID: ")
-                    TextField("", text: $artistId)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
+        ZStack {
+            Color(.black)
+                .ignoresSafeArea()
+            VStack(alignment: .leading) {
+                Picker("Select Item", selection: $selectedItem) {
+                    Text("Artist").tag("Artist")
+                    Text("Album").tag("Album")
+                    Text("Playlist").tag("Playlist")
+                    Text("User").tag("User")
+                    Text("Self").tag("Self")
                 }
+                .background(Color(red: 83/255, green: 83/255, blue: 83/255))
+                .pickerStyle(SegmentedPickerStyle())
+                .foregroundColor(.white)
                 
-                Button("Submit") {
-                    getArtistInfo()
-                }
-                .buttonStyle(.borderedProminent)
                 
-                if (artistInfo != nil) {
+                if selectedItem == "Artist" {
                     HStack {
-                        VStack(alignment: .leading) {
-                            Text("Artist: \(artistInfo?.name ?? "")")
-                            Text(artistInfo?.followers?.total ?? 0 > 0 ? "Followers: \(artistInfo!.followers!.total!)" : "Followers: ")
-                            if let genres = artistInfo?.genres {
-                                Text("Genres:")
-                                ForEach(genres, id: \.self) { genre in
-                                    Text("- \(genre)")
-                                }
-                            }
-                            Text(artistInfo?.popularity ?? 0 > 0 ? "Popularity: \(artistInfo!.popularity!)" : "Popularity: ")
-                        }
-                        
-                        Spacer()
-                        
-                        AsyncImage(url: URL(string: artistInfo?.images?.first?.url ?? "")) { image in
-                            image.resizable()
-                        } placeholder: {
-                            // ProgressView()
-                        }
-                        .frame(width: 120, height: 120)
+                        Text("Artist ID: ")
+                        TextField("", text: $artistId)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .foregroundColor(.black)
                     }
-                }
-            } else if selectedItem == "Album" {
-                HStack {
-                    Text("Album ID: ")
-                    TextField("", text: $albumId)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                }
-                
-                Button("Submit") {
-                    getAlbumInfo()
-                }
-                .buttonStyle(.borderedProminent)
-                
-                if (albumInfo != nil) {
-                    HStack {
-                        VStack(alignment: .leading) {
-                            Text("Album: \(albumInfo?.name ?? "")")
-                            if let artists = albumInfo?.artists {
-                                Text("Artists:")
-                                ForEach(artists, id: \.id) { artist in
-                                    Text("- \(artist.name ?? "")")
-                                }
-                            }
-                            Text("Release Date: \(albumInfo?.release_date ?? "")")
-                            Text(albumInfo?.total_tracks ?? 0 > 0 ? "Total Tracks: \(albumInfo!.total_tracks!)" : "Total Tracks: ")
-                        }
-                        
-                        Spacer()
-                        
-                        AsyncImage(url: URL(string: albumInfo?.images?.first?.url ?? "")) { image in
-                            image.resizable()
-                        } placeholder: {
-                            // ProgressView()
-                        }
-                        .frame(width: 120, height: 120)
-                    }
-                }
-            } else if selectedItem == "Playlist" {
-                HStack {
-                    Text("Playlist ID: ")
-                    TextField("", text: $playlistId)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                }
-                
-                Button("Submit") {
-                    getPlaylistInfo()
-                }
-                .buttonStyle(.borderedProminent)
-                
-                if (playlistInfo != nil) {
-                    HStack {
-                        VStack(alignment: .leading) {
-                            Text("Playlist: \(playlistInfo?.name ?? "")")
-                            Text("Owner: \(playlistInfo?.owner?.display_name ?? "")")
-                            Text(playlistInfo?.tracks?.total ?? 0 > 0 ?
-                                 "Total Tracks: \(playlistInfo!.tracks!.total!)" : "Total Tracks: ")
-                        }
-                        
-                        Spacer()
-                        
-                        AsyncImage(url: URL(string: playlistInfo?.images?.first?.url ?? "")) { image in
-                            image.resizable()
-                        } placeholder: {
-                            // ProgressView()
-                        }
-                        .frame(width: 120, height: 120)
-                    }
-                }
-            } else if selectedItem == "User" {
-                HStack {
-                    Text("User ID: ")
-                    TextField("", text: $userId)
-                        .textFieldStyle(RoundedBorderTextFieldStyle())
-                }
-                
-                Button("Submit") {
-                    getUserInfo()
-                }
-                .buttonStyle(.borderedProminent)
-                
-                if (userInfo != nil) {
-                    HStack {
-                        VStack(alignment: .leading) {
-                            Text("Name: \(userInfo?.display_name ?? "")")
-                        }
-                        
-                        Spacer()
-                        
-                        AsyncImage(url: URL(string: userInfo?.images?.first?.url ?? "")) { image in
-                            image.resizable()
-                        } placeholder: {
-                            // ProgressView()
-                        }
-                        .frame(width: 120, height: 120)
-                    }
-                }
-            } else if selectedItem == "Self" {
-                if accessTokenUser.isEmpty {
-                    Button("Authenticate") {
-                        authenticateUser()
+                    .foregroundColor(.white)
+                    .padding(.top)
+                    
+                    Button("Submit") {
+                        getArtistInfo()
                     }
                     .buttonStyle(.borderedProminent)
-                } else {
-                    HStack{
-                        Text("Type:")
-                        Picker("Select Type", selection: $selectedType) {
-                            Text("Self").tag("self")
-                            Text("Artists").tag("artists")
-                            Text("Tracks").tag("tracks")
-                        }
-                        
-                        Spacer()
-                        
-                        if (selectedType != "self") {
-                            Text("Time:")
-                            Picker("Select Time", selection: $selectedTimeRange) {
-                                Text("Four Weeks").tag("short_term")
-                                Text("Six Months").tag("medium_term")
-                                Text("Years").tag("long_term")
-                            }
-                        }
-                    }
-                    HStack {
-                        Button("Submit") {
-                            if (selectedType == "self") {
-                                getSelfInfo()
-                            } else if (selectedType == "artists") {
-                                getTopArtistInfo()
-                            } else if (selectedType == "tracks") {
-                                getTopTrackInfo()
-                            }
-                        }
-                        .buttonStyle(.borderedProminent)
-                        
-                        Spacer()
-                        
-                        if (selectedType == "artists" && topArtistInfo != nil && selfInfo != nil) {
-                            Button("Generate") {
-                                getRecommendationArtists()
-                            }
-                            .buttonStyle(.borderedProminent)
-                        } else if (selectedType == "tracks" && topTrackInfo != nil && selfInfo != nil) {
-                            Button("Generate") {
-                                getRecommendationTracks()
-                            }
-                            .buttonStyle(.borderedProminent)
-                        }
-                    }
-                    
-                    if (selectedType == "self" && selfInfo != nil) {
-                        HStack {
+                    .tint(Color(red: 29/255, green: 285/255, blue: 84/255))
+                    .foregroundColor(.black)
+                
+                    if (artistInfo != nil) {
+                        HStack(alignment: .top) {
                             VStack(alignment: .leading) {
-                                Text("Country: \(selfInfo?.country ?? "")")
-                                Text("Display Name: \(selfInfo?.display_name ?? "")")
-                                Text("Email: \(selfInfo?.email ?? "")")
-                                Text(selfInfo?.followers?.total ?? 0 > 0 ? "Followers: \(selfInfo!.followers!.total!)" : "Followers: ")
-                                Text("Premium: \(selfInfo?.product ?? "")")
+                                Text("Artist: \(artistInfo?.name ?? "")")
+                                    .font(.system(size: 20, weight: .bold, design: .serif))
+                                    .foregroundColor(.white)
+                                Divider().overlay(Color(.white))
+
+                                Text(artistInfo?.followers?.total ?? 0 > 0 ? "Followers: \(artistInfo!.followers!.total!)" : "Followers: ")
+                                    .foregroundColor(.white)
+                                    .font(.system(size: 16, weight: .none, design: .monospaced))
+                                    .padding(.top)
+
+                                if let genres = artistInfo?.genres {
+                                    Text("Genres:")
+                                        .foregroundColor(.white)
+                                        .font(.system(size: 16, weight: .none, design: .monospaced))
+
+                                    ForEach(genres, id: \.self) { genre in
+                                        Text("- \(genre)")
+                                            .foregroundColor(.white)
+                                            .padding(.leading, 20)
+                                            .font(.system(size: 16, weight: .none, design: .monospaced))
+
+                                    }
+                                }
+                                Text(artistInfo?.popularity ?? 0 > 0 ? "Popularity: \(artistInfo!.popularity!)" : "Popularity: ")
+                                    .foregroundColor(.black)
+
                             }
                             
                             Spacer()
                             
-                            AsyncImage(url: URL(string: selfInfo?.images?.first?.url ?? "")) { image in
+                            AsyncImage(url: URL(string: artistInfo?.images?.first?.url ?? "")) { image in
+                                image.resizable()
+                            } placeholder: {
+                                // ProgressView()
+                            }
+                            .frame(width: 120, height: 120, alignment: .topLeading)
+                        }
+                        .padding(.top)
+                    }
+                } else if selectedItem == "Album" {
+                    HStack {
+                        Text("Album ID: ")
+                            .foregroundStyle(.white)
+                        TextField("", text: $albumId)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .foregroundColor(.black)
+                    }
+                    .padding(.top)
+                    
+                    Button("Submit") {
+                        getAlbumInfo()
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(Color(red: 29/255, green: 285/255, blue: 84/255))
+                    .foregroundColor(.black)
+                    if (albumInfo != nil) {
+                        HStack(alignment: .top) {
+                            VStack(alignment: .leading) {
+                                Text("Album: \(albumInfo?.name ?? "")")
+                                    .foregroundColor(.white)
+                                    .font(.system(size: 20, weight: .bold, design: .serif))
+                                Divider().overlay(Color(.white))
+
+                                if let artists = albumInfo?.artists {
+                                    Text("Artists:")
+                                        .foregroundColor(.white)
+                                        .font(.system(size: 16, weight: .none, design: .monospaced))
+                                        .padding(.top)
+
+                                    ForEach(artists, id: \.id) { artist in
+                                        Text("- \(artist.name ?? "")")
+                                    }
+                                    .foregroundColor(.white)
+                                    .padding(.leading, 20)
+                                    .font(.system(size: 16, weight: .none, design: .monospaced))
+                                }
+                                Text("Release Date: \(albumInfo?.release_date ?? "")")
+                                    .foregroundColor(.white)
+                                    .font(.system(size: 16, weight: .none, design: .monospaced))
+                                Text(albumInfo?.total_tracks ?? 0 > 0 ? "Total Tracks: \(albumInfo!.total_tracks!)" : "Total Tracks: ")
+                                    .foregroundColor(.white)
+                                    .font(.system(size: 16, weight: .none, design: .monospaced))
+                            }
+                            
+                            Spacer()
+                            
+                            AsyncImage(url: URL(string: albumInfo?.images?.first?.url ?? "")) { image in
                                 image.resizable()
                             } placeholder: {
                                 // ProgressView()
                             }
                             .frame(width: 120, height: 120)
                         }
-                    } else if (selectedType == "artists" && topArtistInfo != nil) {
-                        if let topItems = topArtistInfo?.items {
-                            List(topItems, id: \.id) { topItem in
-                                HStack{
-                                    VStack(alignment: .leading) {
-                                        Text("Artist: \(topItem.name ?? "")")
-                                        Text(topItem.popularity ?? 0 > 0 ? "Popularity: \(topItem.popularity!)" : "Popularity: ")
-                                        
-                                        if let genres = topItem.genres {
-                                            Text("Genres:")
-                                            ForEach(genres, id: \.self) { genre in
-                                                Text("- \(genre)")
-                                            }
-                                        }
-                                    }
-                                    
-                                    Spacer()
-                                    
-                                    AsyncImage(url: URL(string: topItem.images?.first?.url ?? "")) { image in
-                                        image.resizable()
-                                    } placeholder: {
-                                        // ProgressView()
-                                    }
-                                    .frame(width: 120, height: 120)
-                                }
+                        .padding(.top)
+                    }
+                } else if selectedItem == "Playlist" {
+                    HStack {
+                        Text("Playlist ID: ")
+                            .foregroundColor(.white)
+                        TextField("", text: $playlistId)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .foregroundColor(.black)
+                    }
+                    .padding(.top)
+                    .foregroundColor(.white)
+                    
+                    Button("Submit") {
+                        getPlaylistInfo()
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(Color(red: 29/255, green: 285/255, blue: 84/255))
+                    .foregroundColor(.black)
+                    if (playlistInfo != nil) {
+                        HStack (alignment: .top){
+                            VStack(alignment: .leading) {
+                                Text("Playlist: \(playlistInfo?.name ?? "")")
+                                    .foregroundColor(.white)
+                                    .font(.system(size: 20, weight: .bold, design: .serif))
+                                
+                                Divider().overlay(Color(.white))
+                                
+                                Text("Owner: \(playlistInfo?.owner?.display_name ?? "")")
+                                    .foregroundColor(.white)
+                                    .font(.system(size: 16, weight: .none, design: .monospaced))
+                                    .padding(.top)
+                                Text(playlistInfo?.tracks?.total ?? 0 > 0 ?
+                                     "Total Tracks: \(playlistInfo!.tracks!.total!)" : "Total Tracks: ")
+                                .foregroundColor(.white)
+                                .font(.system(size: 16, weight: .none, design: .monospaced))
                             }
-                            .listStyle(PlainListStyle())
+                            
+                            Spacer()
+                            
+                            AsyncImage(url: URL(string: playlistInfo?.images?.first?.url ?? "")) { image in
+                                image.resizable()
+                            } placeholder: {
+                                // ProgressView()
+                            }
+                            .frame(width: 120, height: 120)
                         }
-                    } else if (selectedType == "tracks" && topTrackInfo != nil) {
-                        if let topTracks = topTrackInfo?.items {
-                            List(topTracks, id: \.id) { topTrack in
-                                HStack {
-                                    VStack(alignment: .leading) {
-                                        Text("Track: \(topTrack.name ?? "")")
-                                        if let album = topTrack.album {
-                                            Text("Album: \(album.name ?? "")")
-                                        }
-                                        if let artists = topTrack.artists {
-                                            Text("Artists:")
-                                            ForEach(artists, id: \.id) { artist in
-                                                Text("- \(artist.name ?? "")")
-                                            }
-                                        }
-                                        Text(topTrack.popularity ?? 0 > 0 ? "Popularity: \(topTrack.popularity!)" : "Popularity: ")
-                                    }
-                                    
-                                    Spacer()
-                                    
-                                    AsyncImage(url: URL(string: topTrack.album?.images?.first?.url ?? "")) { image in
-                                        image.resizable()
-                                    } placeholder: {
-                                        // ProgressView()
-                                    }
-                                    .frame(width: 120, height: 120)
+                        .padding(.top)
+                    }
+                } else if selectedItem == "User" {
+                    HStack {
+                        Text("User ID: ")
+                            .foregroundColor(.white)
+                        TextField("", text: $userId)
+                            .textFieldStyle(RoundedBorderTextFieldStyle())
+                            .foregroundColor(.black)
+                    }
+                    .padding(.top)
+                    .foregroundColor(.white)
+                    
+                    Button("Submit") {
+                        getUserInfo()
+                    }
+                    .buttonStyle(.borderedProminent)
+                    .tint(Color(red: 29/255, green: 285/255, blue: 84/255))
+                    .foregroundColor(.black)
+                    if (userInfo != nil) {
+                        HStack (alignment: .top){
+                            VStack(alignment: .leading) {
+                                Text("Name: \(userInfo?.display_name ?? "")")
+                                    .foregroundColor(.white)
+                            }
+                            .padding(.top)
+                            Spacer()
+                            
+                            AsyncImage(url: URL(string: userInfo?.images?.first?.url ?? "")) { image in
+                                image.resizable()
+                            } placeholder: {
+                                // ProgressView()
+                            }
+                            .frame(width: 120, height: 120)
+                            .padding(.top)
+                        }
+                    }
+                } else if selectedItem == "Self" {
+                    if accessTokenUser.isEmpty {
+                        Button("Authenticate") {
+                            authenticateUser()
+                        }
+                        .buttonStyle(.borderedProminent)
+                        .tint(Color(red: 29/255, green: 285/255, blue: 84/255))
+                        .foregroundColor(.black)
+                    } else {
+                        HStack{
+                            Text("Type:")
+                            Picker("Select Type", selection: $selectedType) {
+                                Text("Self").tag("self")
+                                Text("Artists").tag("artists")
+                                Text("Tracks").tag("tracks")
+                            }
+                            
+                            Spacer()
+                            
+                            if (selectedType != "self") {
+                                Text("Time:")
+                                Picker("Select Time", selection: $selectedTimeRange) {
+                                    Text("Four Weeks").tag("short_term")
+                                    Text("Six Months").tag("medium_term")
+                                    Text("Years").tag("long_term")
                                 }
                             }
-                            .listStyle(PlainListStyle())
+                        }
+                        HStack {
+                            Button("Submit") {
+                                if (selectedType == "self") {
+                                    getSelfInfo()
+                                } else if (selectedType == "artists") {
+                                    getTopArtistInfo()
+                                } else if (selectedType == "tracks") {
+                                    getTopTrackInfo()
+                                }
+                            }
+                            .buttonStyle(.borderedProminent)
+                            
+                            Spacer()
+                            
+                            if (selectedType == "artists" && topArtistInfo != nil && selfInfo != nil) {
+                                Button("Generate") {
+                                    getRecommendationArtists()
+                                }
+                                .buttonStyle(.borderedProminent)
+                            } else if (selectedType == "tracks" && topTrackInfo != nil && selfInfo != nil) {
+                                Button("Generate") {
+                                    getRecommendationTracks()
+                                }
+                                .buttonStyle(.borderedProminent)
+                            }
+                        }
+                        
+                        if (selectedType == "self" && selfInfo != nil) {
+                            HStack {
+                                VStack(alignment: .leading) {
+                                    Text("Country: \(selfInfo?.country ?? "")")
+                                    Text("Display Name: \(selfInfo?.display_name ?? "")")
+                                    Text("Email: \(selfInfo?.email ?? "")")
+                                    Text(selfInfo?.followers?.total ?? 0 > 0 ? "Followers: \(selfInfo!.followers!.total!)" : "Followers: ")
+                                    Text("Premium: \(selfInfo?.product ?? "")")
+                                }
+                                
+                                Spacer()
+                                
+                                AsyncImage(url: URL(string: selfInfo?.images?.first?.url ?? "")) { image in
+                                    image.resizable()
+                                } placeholder: {
+                                    // ProgressView()
+                                }
+                                .frame(width: 120, height: 120)
+                            }
+                        } else if (selectedType == "artists" && topArtistInfo != nil) {
+                            if let topItems = topArtistInfo?.items {
+                                List(topItems, id: \.id) { topItem in
+                                    HStack{
+                                        VStack(alignment: .leading) {
+                                            Text("Artist: \(topItem.name ?? "")")
+                                            Text(topItem.popularity ?? 0 > 0 ? "Popularity: \(topItem.popularity!)" : "Popularity: ")
+                                            
+                                            if let genres = topItem.genres {
+                                                Text("Genres:")
+                                                ForEach(genres, id: \.self) { genre in
+                                                    Text("- \(genre)")
+                                                }
+                                            }
+                                        }
+                                        
+                                        Spacer()
+                                        
+                                        AsyncImage(url: URL(string: topItem.images?.first?.url ?? "")) { image in
+                                            image.resizable()
+                                        } placeholder: {
+                                            // ProgressView()
+                                        }
+                                        .frame(width: 120, height: 120)
+                                    }
+                                }
+                                .listStyle(PlainListStyle())
+                            }
+                        } else if (selectedType == "tracks" && topTrackInfo != nil) {
+                            if let topTracks = topTrackInfo?.items {
+                                List(topTracks, id: \.id) { topTrack in
+                                    HStack {
+                                        VStack(alignment: .leading) {
+                                            Text("Track: \(topTrack.name ?? "")")
+                                            if let album = topTrack.album {
+                                                Text("Album: \(album.name ?? "")")
+                                            }
+                                            if let artists = topTrack.artists {
+                                                Text("Artists:")
+                                                ForEach(artists, id: \.id) { artist in
+                                                    Text("- \(artist.name ?? "")")
+                                                }
+                                            }
+                                            Text(topTrack.popularity ?? 0 > 0 ? "Popularity: \(topTrack.popularity!)" : "Popularity: ")
+                                        }
+                                        
+                                        Spacer()
+                                        
+                                        AsyncImage(url: URL(string: topTrack.album?.images?.first?.url ?? "")) { image in
+                                            image.resizable()
+                                        } placeholder: {
+                                            // ProgressView()
+                                        }
+                                        .frame(width: 120, height: 120)
+                                    }
+                                }
+                                .listStyle(PlainListStyle())
+                            }
                         }
                     }
                 }
+                
+                Spacer()
             }
-            
-            Spacer()
+            .padding()
+            .onOpenURL { url in
+                extractAccessToken(from: url)
         }
-        .padding()
-        .onOpenURL { url in
-            extractAccessToken(from: url)
         }
     }
     

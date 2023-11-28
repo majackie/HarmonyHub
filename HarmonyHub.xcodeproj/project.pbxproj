@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		5F685A632B1454F6000C8DC2 /* BackgroundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5F685A622B1454F6000C8DC2 /* BackgroundView.swift */; };
 		8F4FA7022AFDDC040082153D /* HarmonyHubApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F4FA7012AFDDC040082153D /* HarmonyHubApp.swift */; };
 		8F4FA7042AFDDC040082153D /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8F4FA7032AFDDC040082153D /* ContentView.swift */; };
 		8F4FA7062AFDDC060082153D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 8F4FA7052AFDDC060082153D /* Assets.xcassets */; };
@@ -23,6 +24,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		5F685A622B1454F6000C8DC2 /* BackgroundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackgroundView.swift; sourceTree = "<group>"; };
 		8F4FA6FE2AFDDC040082153D /* HarmonyHub.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = HarmonyHub.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		8F4FA7012AFDDC040082153D /* HarmonyHubApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HarmonyHubApp.swift; sourceTree = "<group>"; };
 		8F4FA7032AFDDC040082153D /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -108,6 +110,7 @@
 				8F4FA7032AFDDC040082153D /* ContentView.swift */,
 				8F4FA71C2AFF95380082153D /* HomeView.swift */,
 				8F4FA71E2AFF953F0082153D /* AboutView.swift */,
+				5F685A622B1454F6000C8DC2 /* BackgroundView.swift */,
 			);
 			path = View;
 			sourceTree = "<group>";
@@ -204,6 +207,7 @@
 				8F4FA72E2B0070E90082153D /* UserModel.swift in Sources */,
 				8F4FA72C2B006C070082153D /* PlaylistModel.swift in Sources */,
 				8F4FA7042AFDDC040082153D /* ContentView.swift in Sources */,
+				5F685A632B1454F6000C8DC2 /* BackgroundView.swift in Sources */,
 				8F4FA7272B005C230082153D /* ArtistModel.swift in Sources */,
 				8F62149F2B046E090097E95C /* TopTrackModel.swift in Sources */,
 				8F4FA7022AFDDC040082153D /* HarmonyHubApp.swift in Sources */,
