@@ -10,16 +10,20 @@ import SwiftUI
 struct ContentView: View {
     var body: some View {
         TabView {
-            HomeView()
-                .tabItem {
-                    Image(systemName: "house")
-                    Text("Home")
-                }
-            AboutView()
-                .tabItem {
-                    Image(systemName: "person")
-                    Text("About")
-                }
+            Group {
+                HomeView()
+                    .tabItem {
+                        Image(systemName: "house")
+                        Text("Home")
+                    }
+                    .toolbar(.visible, for: .tabBar)
+                AboutView()
+                    .tabItem {
+                        Image(systemName: "person")
+                        Text("About")
+                    }
+            }
+            .toolbarColorScheme(.light, for: .tabBar)
         }
     }
 }

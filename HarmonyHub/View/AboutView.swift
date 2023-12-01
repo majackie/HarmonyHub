@@ -10,10 +10,15 @@ import SwiftUI
 
 struct AboutView: View {
     var body: some View {
-        VStack {
-            Text("A00889988 | Jackie Ma")
-            Text("A01256345 | Jonathan Liu")
-            Text("A01295107 | Wyman Ng")
+        ZStack {
+            Color(.black)
+                .ignoresSafeArea()
+            VStack {
+                Text("A00889988 | Jackie Ma")
+                Text("A01256345 | Jonathan Liu")
+                Text("A01295107 | Wyman Ng")
+            }
+            .foregroundColor(.white)
         }
     }
 }

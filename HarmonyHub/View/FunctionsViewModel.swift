@@ -1,209 +1,69 @@
 //
-//  HomeView.swift
+//  FunctionsViewModel.swift
 //  HarmonyHub
 //
-//  Created by Jackie Ma on 2023-11-11.
+//  Created by Jonathan Liu on 2023-11-28.
 //
 
 import Foundation
-import SwiftUI
 import SafariServices
 
-let clientId = "012cd446b8764125b30398495b54511f"
-let clientSecret = "902a0891d63146d988e6b11b7e332bcb"
-let redirectUri = "myapp://auth/callback"
-
-struct HomeView: View {
-    @StateObject var functionViewModel = FunctionsViewModel()
-    @State private var accessTokenGeneral: String = ""
-    @State private var accessTokenUser: String = ""
+class FunctionsViewModel : ObservableObject {
+    @Published var accessTokenGeneral: String = ""
+    @Published var accessTokenUser: String = ""
     
-    @State private var selfInfo: UserModel? = nil
-    @State private var topArtistInfo: TopArtistModel? = nil
-    @State private var topTrackInfo: TopTrackModel? = nil
-    @State private var topArtistIdArray: [String]? = []
-    @State private var topTrackIdArray: [String]? = []
-    @State private var artistRecommendationInfo: RecommendationModel? = nil
-    @State private var trackRecommendationInfo: RecommendationModel? = nil
-    @State private var newPlaylistInfo: PlaylistModel? = nil
-    @State private var artistRecommendationUriArray: [String]? = []
-    @State private var trackRecommendationUriArray: [String]? = []
+    //empty string
+    @Published var artistId: String = "0Y4inQK6OespitzD6ijMwb"
+    @Published var albumId: String = "1HMLpmZAnNyl9pxvOnTovV"
+    @Published var playlistId: String = "4zfgRmGv5piy8B2FbBuJx4"
+    @Published var userId: String = "_beepee"
     
-    @State private var error: String? = nil
-    @State private var selectedItem: String = ""
-    @State private var selectedType: String = "self"
-    @State private var selectedTimeRange: String = "short_term"
-    @State private var selectedLimit: String = "5"
+    @Published var artistInfo: ArtistModel? = nil
+    @Published var albumInfo: AlbumModel? = nil
+    @Published var playlistInfo: PlaylistModel? = nil
+    @Published var userInfo: UserModel? = nil
+    @Published var selfInfo: UserModel? = nil
+    @Published var topArtistInfo: TopArtistModel? = nil
+    @Published var topTrackInfo: TopTrackModel? = nil
+    @Published var topArtistIdArray: [String]? = []
+    @Published var topTrackIdArray: [String]? = []
+    @Published var artistRecommendationInfo: RecommendationModel? = nil
+    @Published var trackRecommendationInfo: RecommendationModel? = nil
+    @Published var newPlaylistInfo: PlaylistModel? = nil
+    @Published var artistRecommendationUriArray: [String]? = []
+    @Published var trackRecommendationUriArray: [String]? = []
     
-    var body: some View {
-        ZStack {
-            Color(.black)
-                .ignoresSafeArea()
-            VStack(alignment: .leading) {
-                Picker("Select Item", selection: $selectedItem) {
-                    Text("Artist").tag("Artist")
-                    Text("Album").tag("Album")
-                    Text("Playlist").tag("Playlist")
-                    Text("User").tag("User")
-                    Text("Self").tag("Self")
-                }
-                .background(Color(red: 83/255, green: 83/255, blue: 83/255))
-                .pickerStyle(SegmentedPickerStyle())
-                .foregroundColor(.white)
-                
-                
-                if selectedItem == "Artist" {
-                    ArtistView()
-                } else if selectedItem == "Album" {
-                    AlbumView()
-                } else if selectedItem == "Playlist" {
-                    PlaylistView()
-                } else if selectedItem == "User" {
-                    UserView()
-                } else if selectedItem == "Self" {
-                    if accessTokenUser.isEmpty {
-                        Button("Authenticate") {
-                            authenticateUser()
+    @Published var error: String? = nil
+    @Published var selectedType: String = "self"
+    @Published var selectedTimeRange: String = "short_term"
+    @Published var selectedLimit: String = "5"
+    
+    func getUserInfo() {
+        getAccessToken {
+            guard let url = URL(string: "https://api.spotify.com/v1/users/\(self.userId)") else {
+                return
+            }
+            
+            var request = URLRequest(url: url)
+            request.httpMethod = "GET"
+            request.setValue("Bearer \(self.accessTokenGeneral)", forHTTPHeaderField: "Authorization")
+            
+            URLSession.shared.dataTask(with: request) { data, response, error in
+                if let data = data {
+                    do {
+                        let user = try JSONDecoder().decode(UserModel.self, from: data)
+                        DispatchQueue.main.async {
+                            self.userInfo = user
                         }
-                        .buttonStyle(.borderedProminent)
-                        .tint(Color(red: 29/255, green: 285/255, blue: 84/255))
-                        .foregroundColor(.black)
-                    } else {
-                        HStack{
-                            Text("Type:")
-                            Picker("Select Type", selection: $selectedType) {
-                                Text("Self").tag("self")
-                                Text("Artists").tag("artists")
-                                Text("Tracks").tag("tracks")
-                            }
-                            
-                            Spacer()
-                            
-                            if (selectedType != "self") {
-                                Text("Time:")
-                                Picker("Select Time", selection: $selectedTimeRange) {
-                                    Text("Four Weeks").tag("short_term")
-                                    Text("Six Months").tag("medium_term")
-                                    Text("Years").tag("long_term")
-                                }
-                            }
-                        }
-                        HStack {
-                            Button("Submit") {
-                                if (selectedType == "self") {
-                                    getSelfInfo()
-                                } else if (selectedType == "artists") {
-                                    getTopArtistInfo()
-                                } else if (selectedType == "tracks") {
-                                    getTopTrackInfo()
-                                }
-                            }
-                            .buttonStyle(.borderedProminent)
-                            
-                            Spacer()
-                            
-                            if (selectedType == "artists" && topArtistInfo != nil && selfInfo != nil) {
-                                Button("Generate") {
-                                    getRecommendationArtists()
-                                }
-                                .buttonStyle(.borderedProminent)
-                            } else if (selectedType == "tracks" && topTrackInfo != nil && selfInfo != nil) {
-                                Button("Generate") {
-                                    getRecommendationTracks()
-                                }
-                                .buttonStyle(.borderedProminent)
-                            }
-                        }
-                        
-                        if (selectedType == "self" && selfInfo != nil) {
-                            HStack {
-                                VStack(alignment: .leading) {
-                                    Text("Country: \(selfInfo?.country ?? "")")
-                                    Text("Display Name: \(selfInfo?.display_name ?? "")")
-                                    Text("Email: \(selfInfo?.email ?? "")")
-                                    Text(selfInfo?.followers?.total ?? 0 > 0 ? "Followers: \(selfInfo!.followers!.total!)" : "Followers: ")
-                                    Text("Premium: \(selfInfo?.product ?? "")")
-                                }
-                                
-                                Spacer()
-                                
-                                AsyncImage(url: URL(string: selfInfo?.images?.first?.url ?? "")) { image in
-                                    image.resizable()
-                                } placeholder: {
-                                    // ProgressView()
-                                }
-                                .frame(width: 120, height: 120)
-                            }
-                        } else if (selectedType == "artists" && topArtistInfo != nil) {
-                            if let topItems = topArtistInfo?.items {
-                                List(topItems, id: \.id) { topItem in
-                                    HStack{
-                                        VStack(alignment: .leading) {
-                                            Text("Artist: \(topItem.name ?? "")")
-                                            Text(topItem.popularity ?? 0 > 0 ? "Popularity: \(topItem.popularity!)" : "Popularity: ")
-                                            
-                                            if let genres = topItem.genres {
-                                                Text("Genres:")
-                                                ForEach(genres, id: \.self) { genre in
-                                                    Text("- \(genre)")
-                                                }
-                                            }
-                                        }
-                                        
-                                        Spacer()
-                                        
-                                        AsyncImage(url: URL(string: topItem.images?.first?.url ?? "")) { image in
-                                            image.resizable()
-                                        } placeholder: {
-                                            // ProgressView()
-                                        }
-                                        .frame(width: 120, height: 120)
-                                    }
-                                }
-                                .listStyle(PlainListStyle())
-                            }
-                        } else if (selectedType == "tracks" && topTrackInfo != nil) {
-                            if let topTracks = topTrackInfo?.items {
-                                List(topTracks, id: \.id) { topTrack in
-                                    HStack {
-                                        VStack(alignment: .leading) {
-                                            Text("Track: \(topTrack.name ?? "")")
-                                            if let album = topTrack.album {
-                                                Text("Album: \(album.name ?? "")")
-                                            }
-                                            if let artists = topTrack.artists {
-                                                Text("Artists:")
-                                                ForEach(artists, id: \.id) { artist in
-                                                    Text("- \(artist.name ?? "")")
-                                                }
-                                            }
-                                            Text(topTrack.popularity ?? 0 > 0 ? "Popularity: \(topTrack.popularity!)" : "Popularity: ")
-                                        }
-                                        
-                                        Spacer()
-                                        
-                                        AsyncImage(url: URL(string: topTrack.album?.images?.first?.url ?? "")) { image in
-                                            image.resizable()
-                                        } placeholder: {
-                                            // ProgressView()
-                                        }
-                                        .frame(width: 120, height: 120)
-                                    }
-                                }
-                                .listStyle(PlainListStyle())
-                            }
-                        }
+                    } catch {
+                        print(error.localizedDescription)
+                        self.error = "Error parsing user info: \(error.localizedDescription)"
                     }
+                } else if let error = error {
+                    self.error = "Network error: \(error.localizedDescription)"
                 }
-                
-                Spacer()
-            }
-            .padding()
-            .onOpenURL { url in
-                extractAccessToken(from: url)
-            }
+            }.resume()
         }
-        .environmentObject(functionViewModel)
     }
     
     func getAccessToken(completion: @escaping () -> Void) {
@@ -254,24 +114,7 @@ struct HomeView: View {
             }
         }.resume()
     }
-    
-    func authenticateUser() {
-        let authURLString = "https://accounts.spotify.com/authorize" +
-        "?client_id=\(clientId)" +
-        "&response_type=token" +
-        "&redirect_uri=\(redirectUri)" +
-        "&scope=user-read-private" +
-        "%20user-read-email" +
-        "%20user-top-read" +
-        "%20playlist-modify-public"
-        
-        if let authURL = URL(string: authURLString) {
-            if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
-                let safariViewController = SFSafariViewController(url: authURL)
-                windowScene.windows.first?.rootViewController?.present(safariViewController, animated: true, completion: nil)
-            }
-        }
-    }
+
     
     func extractAccessToken(from url: URL) {
         if let fragment = url.fragment {
@@ -296,7 +139,91 @@ struct HomeView: View {
             }
         }
     }
-
+    
+    func getArtistInfo() {
+        getAccessToken {
+            guard let url = URL(string: "https://api.spotify.com/v1/artists/\(self.artistId)") else {
+                return
+            }
+            
+            var request = URLRequest(url: url)
+            request.httpMethod = "GET"
+            request.setValue("Bearer \(self.accessTokenGeneral)", forHTTPHeaderField: "Authorization")
+            
+            URLSession.shared.dataTask(with: request) { data, response, error in
+                if let data = data {
+                    do {
+                        let artist = try JSONDecoder().decode(ArtistModel.self, from: data)
+                        DispatchQueue.main.async {
+                            self.artistInfo = artist
+                        }
+                    } catch {
+                        print(error.localizedDescription)
+                        self.error = "Error parsing artist info: \(error.localizedDescription)"
+                    }
+                } else if let error = error {
+                    self.error = "Network error: \(error.localizedDescription)"
+                }
+            }.resume()
+        }
+    }
+    
+    func getAlbumInfo() {
+        getAccessToken {
+            guard let url = URL(string: "https://api.spotify.com/v1/albums/\(self.albumId)") else {
+                return
+            }
+            
+            var request = URLRequest(url: url)
+            request.httpMethod = "GET"
+            request.setValue("Bearer \(self.accessTokenGeneral)", forHTTPHeaderField: "Authorization")
+            
+            URLSession.shared.dataTask(with: request) { data, response, error in
+                if let data = data {
+                    do {
+                        let album = try JSONDecoder().decode(AlbumModel.self, from: data)
+                        DispatchQueue.main.async {
+                            self.albumInfo = album
+                        }
+                    } catch {
+                        print(error.localizedDescription)
+                        self.error = "Error parsing album info: \(error.localizedDescription)"
+                    }
+                } else if let error = error {
+                    self.error = "Network error: \(error.localizedDescription)"
+                }
+            }.resume()
+        }
+    }
+    
+    func getPlaylistInfo() {
+        getAccessToken {
+            guard let url = URL(string: "https://api.spotify.com/v1/playlists/\(self.playlistId)") else {
+                return
+            }
+            
+            var request = URLRequest(url: url)
+            request.httpMethod = "GET"
+            request.setValue("Bearer \(self.accessTokenGeneral)", forHTTPHeaderField: "Authorization")
+            
+            URLSession.shared.dataTask(with: request) { data, response, error in
+                if let data = data {
+                    do {
+                        let playlist = try JSONDecoder().decode(PlaylistModel.self, from: data)
+                        DispatchQueue.main.async {
+                            self.playlistInfo = playlist
+                        }
+                    } catch {
+                        print(error.localizedDescription)
+                        self.error = "Error parsing playlist info: \(error.localizedDescription)"
+                    }
+                } else if let error = error {
+                    self.error = "Network error: \(error.localizedDescription)"
+                }
+            }.resume()
+        }
+    }
+    
     
     func getSelfInfo() {
         guard let url = URL(string: "https://api.spotify.com/v1/me") else {
@@ -397,7 +324,7 @@ struct HomeView: View {
             
             var request = URLRequest(url: url)
             request.httpMethod = "GET"
-            request.setValue("Bearer \(accessTokenGeneral)", forHTTPHeaderField: "Authorization")
+            request.setValue("Bearer \(self.accessTokenGeneral)", forHTTPHeaderField: "Authorization")
             
             URLSession.shared.dataTask(with: request) { data, response, error in
                 if let data = data {
@@ -405,7 +332,7 @@ struct HomeView: View {
                         let user = try JSONDecoder().decode(RecommendationModel.self, from: data)
                         DispatchQueue.main.async {
                             self.artistRecommendationInfo = user
-                            createPlaylist()
+                            self.createPlaylist()
                         }
                     } catch {
                         print(error.localizedDescription)
@@ -439,7 +366,7 @@ struct HomeView: View {
             
             var request = URLRequest(url: url)
             request.httpMethod = "GET"
-            request.setValue("Bearer \(accessTokenGeneral)", forHTTPHeaderField: "Authorization")
+            request.setValue("Bearer \(self.accessTokenGeneral)", forHTTPHeaderField: "Authorization")
             
             URLSession.shared.dataTask(with: request) { data, response, error in
                 if let data = data {
@@ -447,7 +374,7 @@ struct HomeView: View {
                         let user = try JSONDecoder().decode(RecommendationModel.self, from: data)
                         DispatchQueue.main.async {
                             self.trackRecommendationInfo = user
-                            createPlaylist()
+                            self.createPlaylist()
                         }
                     } catch {
                         print(error.localizedDescription)
@@ -464,29 +391,29 @@ struct HomeView: View {
         guard let url = URL(string: "https://api.spotify.com/v1/users/\(selfInfo!.id!)/playlists") else {
             return
         }
-
+        
         let playlistName = Int(Date().timeIntervalSince1970 * 1000)
         let playlistData: [String: Any] = [
             "name": "\(playlistName)"
         ]
-
+        
         guard let requestBody = try? JSONSerialization.data(withJSONObject: playlistData) else {
             return
         }
-
+        
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("Bearer \(accessTokenUser)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = requestBody
-
+        
         URLSession.shared.dataTask(with: request) { data, response, error in
             if let data = data {
                 do {
                     let user = try JSONDecoder().decode(PlaylistModel.self, from: data)
                     DispatchQueue.main.async {
                         self.newPlaylistInfo = user
-                        addTrackToPlaylist()
+                        self.addTrackToPlaylist()
                     }
                 } catch {
                     print(error.localizedDescription)
@@ -497,7 +424,7 @@ struct HomeView: View {
             }
         }.resume()
     }
-
+    
     func addTrackToPlaylist() {
         var playlistData: [String: Any] = [:]
         
@@ -532,21 +459,21 @@ struct HomeView: View {
         guard let requestBody = try? JSONSerialization.data(withJSONObject: playlistData) else {
             return
         }
-
+        
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
         request.setValue("Bearer \(accessTokenUser)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         request.httpBody = requestBody
-
+        
         URLSession.shared.dataTask(with: request) { data, response, error in
-            openSpotifyPlaylist()
+            self.openSpotifyPlaylist()
         }.resume()
     }
     
     func openSpotifyPlaylist() {
         DispatchQueue.main.async {
-            if let url = URL(string: "https://open.spotify.com/playlist/\(newPlaylistInfo!.id!)") {
+            if let url = URL(string: "https://open.spotify.com/playlist/\(self.newPlaylistInfo!.id!)") {
                 if let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene {
                     let safariViewController = SFSafariViewController(url: url)
                     windowScene.windows.first?.rootViewController?.present(safariViewController, animated: true, completion: nil)
@@ -554,8 +481,4 @@ struct HomeView: View {
             }
         }
     }
-}
-
-#Preview {
-    HomeView()
 }
