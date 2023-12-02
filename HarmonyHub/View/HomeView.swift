@@ -49,6 +49,7 @@ struct HomeView: View {
                 }
                 .background(Color(red: 83/255, green: 83/255, blue: 83/255))
                 .pickerStyle(SegmentedPickerStyle())
+                .cornerRadius(7)
                 .foregroundColor(.white)
                 
                 
@@ -150,16 +151,23 @@ struct HomeView: View {
                                     HStack{
                                         VStack(alignment: .leading) {
                                             Text("Artist: \(topItem.name ?? "")")
+                                                .foregroundColor(.white) // Set text color to white
+
                                             Text(topItem.popularity ?? 0 > 0 ? "Popularity: \(topItem.popularity!)" : "Popularity: ")
+                                                .foregroundColor(.white) // Set text color to white
+
                                             
                                             if let genres = topItem.genres {
                                                 Text("Genres:")
+                                                    .foregroundColor(.white) // Set text color to white
+
                                                 ForEach(genres, id: \.self) { genre in
                                                     Text("- \(genre)")
+                                                        .padding(.leading, 20)
+                                                        .foregroundColor(.white) // Set text color to white
                                                 }
                                             }
                                         }
-                                        
                                         Spacer()
                                         
                                         AsyncImage(url: URL(string: topItem.images?.first?.url ?? "")) { image in
@@ -169,6 +177,8 @@ struct HomeView: View {
                                         }
                                         .frame(width: 120, height: 120)
                                     }
+                                    .listRowBackground(Color.black) // Set the background color here
+                                    .listRowSeparatorTint(.white)
                                 }
                                 .listStyle(PlainListStyle())
                             }
@@ -178,16 +188,26 @@ struct HomeView: View {
                                     HStack {
                                         VStack(alignment: .leading) {
                                             Text("Track: \(topTrack.name ?? "")")
+                                                .foregroundColor(.white) // Set text color to white
+                                            
                                             if let album = topTrack.album {
                                                 Text("Album: \(album.name ?? "")")
+                                                    .foregroundColor(.white) // Set text color to white
                                             }
+                                            
                                             if let artists = topTrack.artists {
                                                 Text("Artists:")
+                                                    .foregroundColor(.white) // Set text color to white
+                                                
                                                 ForEach(artists, id: \.id) { artist in
                                                     Text("- \(artist.name ?? "")")
+                                                        .padding(.leading, 20)
+                                                        .foregroundColor(.white) // Set text color to white
                                                 }
                                             }
+                                            
                                             Text(topTrack.popularity ?? 0 > 0 ? "Popularity: \(topTrack.popularity!)" : "Popularity: ")
+                                                .foregroundColor(.white) // Set text color to white
                                         }
                                         
                                         Spacer()
@@ -199,6 +219,8 @@ struct HomeView: View {
                                         }
                                         .frame(width: 120, height: 120)
                                     }
+                                    .listRowBackground(Color.black) // Set the background color here
+                                    .listRowSeparatorTint(.white)
                                 }
                                 .listStyle(PlainListStyle())
                             }
