@@ -71,21 +71,25 @@ struct HomeView: View {
                     } else {
                         HStack{
                             Text("Type:")
+                                .foregroundColor(Color(red: 29/255, green: 285/255, blue: 84/255))
                             Picker("Select Type", selection: $selectedType) {
                                 Text("Self").tag("self")
                                 Text("Artists").tag("artists")
                                 Text("Tracks").tag("tracks")
                             }
+                            .tint(.white)
                             
                             Spacer()
                             
                             if (selectedType != "self") {
                                 Text("Time:")
+                                    .foregroundColor(Color(red: 29/255, green: 285/255, blue: 84/255))
                                 Picker("Select Time", selection: $selectedTimeRange) {
                                     Text("Four Weeks").tag("short_term")
                                     Text("Six Months").tag("medium_term")
                                     Text("Years").tag("long_term")
                                 }
+                                .tint(.white)
                             }
                         }
                         HStack {
@@ -99,19 +103,25 @@ struct HomeView: View {
                                 }
                             }
                             .buttonStyle(.borderedProminent)
+                            .tint(Color(red: 29/255, green: 285/255, blue: 84/255))
+                            .foregroundColor(.black)
                             
                             Spacer()
                             
-                            if (selectedType == "artists" && topArtistInfo != nil && selfInfo != nil) {
+                            if (selectedType == "artists" && topArtistInfo != nil  && selfInfo != nil) {
                                 Button("Generate") {
                                     getRecommendationArtists()
                                 }
                                 .buttonStyle(.borderedProminent)
-                            } else if (selectedType == "tracks" && topTrackInfo != nil && selfInfo != nil) {
+                                .foregroundColor(.black)
+                                .tint(Color(red: 29/255, green: 285/255, blue: 84/255))
+                            } else if (selectedType == "tracks" && topTrackInfo != nil  && selfInfo != nil) {
                                 Button("Generate") {
                                     getRecommendationTracks()
                                 }
                                 .buttonStyle(.borderedProminent)
+                                .foregroundColor(.black)
+                                .tint(Color(red: 29/255, green: 285/255, blue: 84/255))
                             }
                         }
                         
