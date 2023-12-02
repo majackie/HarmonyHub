@@ -8,13 +8,14 @@
 import SwiftUI
 
 struct ContentView: View {
+    var tabBarViewModel = TabBarViewModel()
     var body: some View {
         TabView {
             Group {
                 HomeView()
                     .tabItem {
                         Image(systemName: "house")
-                            .tint(Color(red: 29/255, green: 285/255, blue: 84/255))
+                            .foregroundColor(Color(red: 29/255, green: 285/255, blue: 84/255))
                         Text("Home")
                             .foregroundColor(Color(red: 29/255, green: 285/255, blue: 84/255))
                     }
@@ -22,13 +23,15 @@ struct ContentView: View {
                 AboutView()
                     .tabItem {
                         Image(systemName: "person")
-                            .foregroundColor(Color(red: 29/255, green: 285/255, blue: 84/255))
+                            .foregroundColor(Color(red: 29255, green: 285/255, blue: 84/255))
                         Text("About")
-                            .foregroundColor(Color(red: 29/255, green: 285/255, blue: 84/255))
                     }
             }
         }
         .tint(Color(red: 29/255, green: 285/255, blue: 84/255)) // Set accent color for the entire TabView
+        .onAppear() {
+            tabBarViewModel.changeDefaultUITabBar()
+        }
     }
 }
 
